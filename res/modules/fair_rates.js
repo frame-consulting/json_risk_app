@@ -1,13 +1,17 @@
 exports.depends=['params_assignment'];
 
 function get_curve(name,params){
-    let c=params.curves[name];
-    if (!c) return null;
-
-    return {
-        times: c.times,
-        dfs:c.dfs[0]
-    };
+    let vec_curve=params.curves[name];
+    if (!vec_curve) return null;
+    
+    return Object.assign({}, vec_curve, {
+      dfs: vec_curve.dfs
+        ? vec_curve.dfs[0]
+        : null,
+      zcs: vec_curve.zcs
+        ? vec_curve.zcs[0]
+        : null,
+    });
 }
 
 exports.instrument_mapping=function(){
@@ -38,5 +42,11 @@ exports.instrument_mapping=function(){
     }
     
     this.instrument.fixed_rate=rate;
+}
+
+exports.simulation_once=function(){
+    // store fixed rate on instrument
+    if (typeof this.instrument.fixed_rate!=='number') return null;
+    this.results.fixed_rate=this.instrument.fixed_rate;
 }
 
