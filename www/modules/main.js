@@ -50,11 +50,13 @@ function update_code(module){
 
 	req.addEventListener('load', function(evt){
 		if(req.status===200){
-			code.innerHTML=req.responseText.replace('&', "&amp;")
-				.replace('<', "&lt;")
-				.replace('>', "&gt;")
-				.replace('"', "&quot;")
-				.replace("'", "&#39;");
+			let content=req.responseText;
+            content=content.replaceAll('&', "&amp;")
+            .replaceAll('<', "&lt;")
+            .replaceAll('>', "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+			code.innerHTML=content;
 			code.classList.remove('prettyprinted');
 			prettyPrint();
 		}else{
