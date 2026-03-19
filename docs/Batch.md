@@ -26,7 +26,7 @@ Here is an exemplary JSON representation of a run configuration:
   "IR_Sensitivities"
  ],
  "modules": [
-  "pricing",
+  "valuation",
   "common_attributes",
   "params_assignment"
  ],

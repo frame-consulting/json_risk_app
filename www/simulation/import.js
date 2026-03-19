@@ -171,7 +171,7 @@ var load_modules_list=function(sc){
 			sc.available_modules.list=JSON.parse(req.responseText).res;
 			sc.available_modules.selection=[];			
 			// set default modules for convenience
-			for (let m of ['pricing', 'params_assignment', 'common_attributes']){
+			for (let m of ['valuation', 'params_assignment', 'common_attributes']){
 				if (sc.available_modules.list.indexOf(m)>=0) sc.available_modules.selection.push(m);
 			}
             sc.$apply();

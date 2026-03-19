@@ -17,7 +17,7 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
     $scope.modules = {
         available: null,
         selection: null,
-		always: ['pricing', 'params_assignment', 'cashflows', 'cashflowtables']
+		always: ['valuation', 'params_assignment', 'cashflows', 'legs']
     };
 
 	$scope.picker={

@@ -6,7 +6,7 @@
     	<meta name="description" content="">
     	<meta name="author" content="">
     	<link rel="icon" href="/assets/images/favicon.png">
-    	<title>JSON risk - pricing</title>
+    	<title>JSON risk - simulation</title>
     	<!-- Bootstrap core CSS -->
     	<link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     	<!-- Custom styles for this template -->
@@ -33,7 +33,7 @@
     			<img src="/assets/images/favicon.png" width="25" height="25" class="d-inline-block align-top" alt="">
     			JSON risk
   			</a>
-			<span class="navbar-text text-light ml-2 mr-auto">Portfolio Pricing</span>
+			<span class="navbar-text text-light ml-2 mr-auto">Simulation</span>
 			<span id="jrloginstatus" class="navbar-text text-light mr-2 ml-auto"></span>
     	</nav>   
     	<div class="container-fluid">
@@ -74,9 +74,9 @@
             				</h6>
             				<ul class="navbar-nav flex-column px-3 mb-1" id="docs">
 			                  <li class="nav-item">
-                                <a target="_blank" class="nav-link" href="/docs/Pricing.md">
+                                <a target="_blank" class="nav-link" href="/docs/Simulation.md">
                                   <span data-feather="file-text"></span>
-					                Pricing                </a>
+					                Simulation                </a>
                               </li>
             				</ul>  
           				</div>
@@ -529,7 +529,7 @@
 		  					</button>
                   				<h4 class="alert-heading">Errors <span class="badge badge-primary" ng-if="analytics.error_count>0">{{analytics.error_count}}</span></h4>
                   				<hr>
-                  				<p ng-repeat="x in errors">Error pricing instrument {{x.id}}: {{x.msg}} <span ng-if="x.count>1">[repeats {{x.count}} times]</span> </p>
+                  				<p ng-repeat="x in errors">Error simulating instrument {{x.id}}: {{x.msg}} <span ng-if="x.count>1">[repeats {{x.count}} times]</span> </p>
                 		</div>               
                 		<div class="alert alert-danger alert-dismissible" role="alert" ng-if="analytics.errors_ids!==null">
 		  					<button type="button" class="close" ng-click="clear_errors_ids()" aria-label="Close">

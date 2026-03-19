@@ -7,7 +7,7 @@ const jr_root=process.env['JR_ROOT'];
 const jr_datadir=process.env['JR_DATADIR'];
 const jr_hostname=process.env['JR_HOSTNAME'];
 const jr_port=process.env['JR_PORT'];
-const JSONrisk=require(`${jr_root}/www/assets/js/json_risk.js`);
+const JsonRisk=require(`${jr_root}/www/assets/js/json_risk.js`);
 const module_support=require(`${jr_root}/www/assets/js/module_support.js`);
 
 
@@ -67,7 +67,7 @@ if (!Array.isArray(run_info.modules || [])){
 }
 
 // normalize valuation date as YYYY-MM-DD after checking validity
-const d=JSONrisk.get_safe_date(run_info.valuation_date);
+const d=JsonRisk.date_or_throw(run_info.valuation_date);
 if (!d){
     util.jr_fail(`Invalid run info file ${run_info_file}: Does not contain valid valuation date`, 1);
 }

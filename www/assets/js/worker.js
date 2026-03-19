@@ -3,20 +3,13 @@ importScripts('/assets/js/module_support.js'); // makes module_support available
 
 /* I. main logic called by main.js */
 
-var has_params=false;
-var modules=[];
+let params=null;
+let modules=[];
 
 onmessage = function(e) {
-	var d=e.data;
+	const d=e.data;
 	if (d.params){
-		try{
-			JsonRisk.store_params(d.params);
-            // set valuation date which is already sanitized during storage
-            JsonRisk.valuation_date=JsonRisk.get_params().valuation_date;
-			has_params=true;
-		}catch(ex){
-			postMessage({error: true, msg: ex.message});
-		}		
+		params=d.params;	
 	}
 	if (d.modules){
         if (!Array.isArray(d.modules)){
@@ -26,7 +19,7 @@ onmessage = function(e) {
         modules=module_support.load_modules_and_dependencies(d.modules);
 	}
 	if (d.instrument){
-		if(!has_params){
+		if(!params){
 			postMessage({error: true, msg: 'No parameters loaded', id: null});
 			return 0;
 		}
@@ -36,22 +29,27 @@ onmessage = function(e) {
 
 		// call instrument_mapping instructions from all modules
 		try{
-			for (let j=0;j<modules.length;j++){
-			// check if instrument_mapping exists
-				if (typeof modules[j].instrument_mapping === "function"){
-						modules[j].instrument_mapping.call({
-						instrument: d.instrument,
-						params: JsonRisk.get_params()
-					});
-				};
-			}
+			for (const m of modules){
+			    // check if instrument_mapping exists
+			    if (typeof m.instrument_mapping !== "function") continue;
+		     
+		        try{
+				    m.instrument_mapping.call({
+				        instrument_json: d.instrument,
+				        params_json: params
+			        });
+                }catch(ex){
+                    let message=`Error in module ${m.name}: ${ex.message}`;
+                    throw new Error(message);
+                }
+		    }
 		}catch(ex){
 			postMessage({warning: true, msg: ex.message, id: d.instrument.id})
 		}
 
 		try{
 			// run generic JSON risk simulation
-			var res=JsonRisk.simulation(d.instrument,modules);
+			const res=JsonRisk.simulation(d.instrument,params,modules);
             res.id=d.instrument.id;
 			postMessage({res: res});
 		}catch(ex){

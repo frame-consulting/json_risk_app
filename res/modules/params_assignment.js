@@ -110,7 +110,7 @@ assign_params=function(i,p){
 }
 
 exports.instrument_mapping=function(){
-	assign_params(this.instrument,this.params)
+	assign_params(this.instrument_json,this.params_json)
 }
 
 

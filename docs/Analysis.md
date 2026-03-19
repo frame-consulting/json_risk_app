@@ -1,7 +1,7 @@
 # Analysis
 The Analysis applet provides deep-dive analysis of a single instrument. It allows calculation of present values under scenarios and inspection of detailed results like cash flows and cash flow tables.
 
-For calculation of risk figures on a whole portfolio of instruments, see [documentation of the Pricing applet](/docs/Pricing.md).
+For calculation of risk figures on a whole portfolio of instruments, see [documentation of the Simulation applet](/docs/Simulation.md) or [documentation of the Batch applet](/docs/Batch.md).
 
 ##### Table of contents
 1. [Creating and editing an instrument](#instr)
@@ -9,7 +9,7 @@ For calculation of risk figures on a whole portfolio of instruments, see [docume
 2. [Results](#results)
 
 ## Creating and editing an instrument <a name="instr" style="padding-top: 50px"></a>
-The easiest way to create an instrument in the Analysis applet is to just click `Analyze` for any existing instrument in the `Portfolio` or `Pricing` applet. This immediately opens the Analysis applet with a copy of the instrument.
+The easiest way to create an instrument in the Analysis applet is to just click `Analyze` for any existing instrument in the `Portfolio` or `Simulation` applet. This immediately opens the Analysis applet with a copy of the instrument.
 
 Then, there are two ways to edit instrument attributes within the JSON risk analysis applet:
 

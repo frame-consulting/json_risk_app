@@ -237,45 +237,47 @@
 				</div> <!-- col-2 -->
 			</div> <!-- row -->
 
-		  <div class="row" ng-if="res.cashflowtable">
-			  <div class="col-12">
-				<p class="lead">Cashflow table</p>
+		  <div class="row" ng-if="res.legs">
+			  <div class="col-12" ng-repeat="x in res.legs">
+				<p class="lead">Leg {{$index}}</p>
 				<div class="table-responsive">
 				        <table class="table table-responsive table-hover table-sm table-bordered">
 				          <thead class="thead-light">
 				            <tr>
+				              <th scope="col" ng-if="x.currency">Currency</th>
+				              <th scope="col">Pmt type</th>
+				              <th scope="col">Start date</th>
+				              <th scope="col">End date</th>
 				              <th scope="col">Pmt date</th>
-				              <th scope="col">Accr start date</th>
-				              <th scope="col">Accr end date</th>
-				              <th scope="col">Accr factor</th>
-				              <th scope="col">Fwd rate</th>
-				              <th scope="col">Interest date</th>
-				              <th scope="col">Fixing date</th>
-				              <th scope="col">Repay date</th>
-				              <th scope="col">Condition change date</th>
-				              <th scope="col">Curr principal</th>
-				              <th scope="col">Accr</th>
-				              <th scope="col">Int pmt</th>
-				              <th scope="col">Principal pmt</th>
-				              <th scope="col">Total pmt</th>
+				              <th scope="col">Value Date</th>
+				              <th scope="col">Notional</th>
+				              <th scope="col">Fixed</th>
+  				              <th scope="col">Rate</th>
+  				              <th scope="col">Spread</th>
+				              <th scope="col">Year Fraction</th>
+				              <th scope="col">Interest Amount</th>
+				              <th scope="col">Principal Amount</th>
+				              <th scope="col">Total Amount</th>
+  				              <th scope="col">PV</th>
 				            </tr>
 				          </thead>
 				          <tbody>
-				            <tr ng-repeat="x in res.cashflowtable.date_accrual_start track by $index">
-								<td>{{res.cashflowtable.date_pmt[$index] | date:'yyyy-MM-dd'}}</td>
-								<td>{{x | date:'yyyy-MM-dd'}}</td>
-								<td>{{res.cashflowtable.date_accrual_end[$index] | date:'yyyy-MM-dd'}}</td>
-								<td class="text-right">{{res.cashflowtable.accrual_factor[$index] | number:6}}</td>                    
-								<td class="text-right">{{res.cashflowtable.fwd_rate[$index] | number:6}}</td>
-								<td><span class="badge badge-{{res.cashflowtable.is_interest_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable.is_interest_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable.is_fixing_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable.is_fixing_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable.is_repay_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable.is_repay_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable.is_condition_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable.is_condition_date[$index]}}</span></td>
-								<td class="text-right">{{res.cashflowtable.current_principal[$index] | number:2}}</td> 
-								<td class="text-right">{{res.cashflowtable.accrued_interest[$index] | number:2}}</td>                    
-								<td class="text-right">{{res.cashflowtable.pmt_interest[$index] | number:2}}</td>
-								<td class="text-right">{{res.cashflowtable.pmt_principal[$index] | number:2}}</td>                    
-								<td class="text-right">{{res.cashflowtable.pmt_total[$index] | number:2}}</td>
+				            <tr ng-repeat="p in x.payments">
+								<td ng-if="x.currency">{{x.currency}}</td>
+                                <th>{{p.type}}</th>
+								<td>{{p.date_start}}</td>
+								<td>{{p.date_end}}</td>
+								<td>{{p.date_pmt}}</td>
+								<td>{{p.date_value}}</td>
+								<td class="text-right">{{p.notional | number:2}}</td> 
+								<td><span class="badge badge-{{p.is_fixed ? 'primary' : 'secondary'}}">{{p.is_fixed}}</span></td>
+								<td class="text-right"><span ng-if="p.rate!==undefined">{{p.rate * 100 | number:4}}%</span></td> 
+								<td class="text-right"><span ng-if="p.spread!==undefined">{{p.spread * 100 | number:4}}%</td> 
+								<td class="text-right">{{p.yf | number:6}}</td> 
+								<td class="text-right">{{p.amount_interest | number:2}}</td> 
+								<td class="text-right">{{p.amount_notional | number:2}}</td> 
+								<td class="text-right">{{p.amount | number:2}}</td> 
+								<td class="text-right">{{p.pv | number:2}}</td> 
 				            </tr>
 
 				          </tbody>
@@ -283,101 +285,6 @@
 				  </div> <!-- table -->
 				</div> <!-- col -->
 			</div> <!-- row -->
-
-		  <div class="row" ng-if="res.cashflowtable_fix">
-			  <div class="col-12">
-				<p class="lead">Cashflow table (fix)</p>
-				<div class="table-responsive">
-				        <table class="table table-responsive table-hover table-sm table-bordered">
-				          <thead class="thead-light">
-				            <tr>
-				              <th scope="col">Pmt date</th>
-				              <th scope="col">Accr start date</th>
-				              <th scope="col">Accr end date</th>
-				              <th scope="col">Accr factor</th>
-				              <th scope="col">Fwd rate</th>
-				              <th scope="col">Interest date</th>
-				              <th scope="col">Fixing date</th>
-				              <th scope="col">Repay date</th>
-				              <th scope="col">Condition change date</th>
-				              <th scope="col">Curr principal</th>
-				              <th scope="col">Accr</th>
-				              <th scope="col">Int pmt</th>
-				              <th scope="col">Principal pmt</th>
-				              <th scope="col">Total pmt</th>
-				            </tr>
-				          </thead>
-				          <tbody>
-				            <tr ng-repeat="x in res.cashflowtable_fix.date_accrual_start track by $index">
-								<td>{{res.cashflowtable_fix.date_pmt[$index] | date:'yyyy-MM-dd'}}</td>
-								<td>{{x | date:'yyyy-MM-dd'}}</td>
-								<td>{{res.cashflowtable_fix.date_accrual_end[$index] | date:'yyyy-MM-dd'}}</td>
-								<td class="text-right">{{res.cashflowtable_fix.accrual_factor[$index] | number:6}}</td>                    
-								<td class="text-right">{{res.cashflowtable_fix.fwd_rate[$index] | number:6}}</td>
-								<td><span class="badge badge-{{res.cashflowtable_fix.is_interest_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_fix.is_interest_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable_fix.is_fixing_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_fix.is_fixing_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable_fix.is_repay_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_fix.is_repay_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable_fix.is_condition_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_fix.is_condition_date[$index]}}</span></td>
-								<td class="text-right">{{res.cashflowtable_fix.current_principal[$index] | number:2}}</td> 
-								<td class="text-right">{{res.cashflowtable_fix.accrued_interest[$index] | number:2}}</td>                    
-								<td class="text-right">{{res.cashflowtable_fix.pmt_interest[$index] | number:2}}</td>
-								<td class="text-right">{{res.cashflowtable_fix.pmt_principal[$index] | number:2}}</td>                    
-								<td class="text-right">{{res.cashflowtable_fix.pmt_total[$index] | number:2}}</td>
-				            </tr>
-
-				          </tbody>
-				        </table>
-				  </div> <!-- table -->
-				</div> <!-- col -->
-			</div> <!-- row -->
-
-		  <div class="row" ng-if="res.cashflowtable_float">
-			  <div class="col-12">
-				<p class="lead">Cashflow table (float)</p>
-				<div class="table-responsive">
-				        <table class="table table-responsive table-hover table-sm table-bordered">
-				          <thead class="thead-light">
-				            <tr>
-				              <th scope="col">Pmt date</th>
-				              <th scope="col">Accr start date</th>
-				              <th scope="col">Accr end date</th>
-				              <th scope="col">Accr factor</th>
-				              <th scope="col">Fwd rate</th>
-				              <th scope="col">Interest date</th>
-				              <th scope="col">Fixing date</th>
-				              <th scope="col">Repay date</th>
-				              <th scope="col">Condition change date</th>
-				              <th scope="col">Curr principal</th>
-				              <th scope="col">Accr</th>
-				              <th scope="col">Int pmt</th>
-				              <th scope="col">Principal pmt</th>
-				              <th scope="col">Total pmt</th>
-				            </tr>
-				          </thead>
-				          <tbody>
-				            <tr ng-repeat="x in res.cashflowtable_float.date_accrual_start track by $index">
-								<td>{{res.cashflowtable_float.date_pmt[$index] | date:'yyyy-MM-dd'}}</td>
-								<td>{{x | date:'yyyy-MM-dd'}}</td>
-								<td>{{res.cashflowtable_float.date_accrual_end[$index] | date:'yyyy-MM-dd'}}</td>
-								<td class="text-right">{{res.cashflowtable_float.accrual_factor[$index] | number:6}}</td>                    
-								<td class="text-right">{{res.cashflowtable_float.fwd_rate[$index] | number:6}}</td>
-								<td><span class="badge badge-{{res.cashflowtable_float.is_interest_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_float.is_interest_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable_float.is_fixing_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_float.is_fixing_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable_float.is_repay_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_float.is_repay_date[$index]}}</span></td>
-								<td><span class="badge badge-{{res.cashflowtable_float.is_condition_date[$index] ? 'primary' : 'secondary'}}">{{res.cashflowtable_float.is_condition_date[$index]}}</span></td>
-								<td class="text-right">{{res.cashflowtable_float.current_principal[$index] | number:2}}</td> 
-								<td class="text-right">{{res.cashflowtable_float.accrued_interest[$index] | number:2}}</td>                    
-								<td class="text-right">{{res.cashflowtable_float.pmt_interest[$index] | number:2}}</td>
-								<td class="text-right">{{res.cashflowtable_float.pmt_principal[$index] | number:2}}</td>                    
-								<td class="text-right">{{res.cashflowtable_float.pmt_total[$index] | number:2}}</td>
-				            </tr>
-
-				          </tbody>
-				        </table>
-				  </div> <!-- table -->
-				</div> <!-- col -->
-			</div> <!-- row -->
-
 
 			<div class="row" ng-if="res.json">
 			  <div class="col-12">

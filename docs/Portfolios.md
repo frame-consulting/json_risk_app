@@ -22,7 +22,7 @@ While each item in the portfolio can have an arbitrary number of attributes with
 The three attributes below should be present on every item in the portfolio:
 
  - id - A unique identifier.
- - sub\_portfolio - An identifier for the sub portfolio the instrument belongs to. The sub portfolio defines the finest aggregation level for the pricing app, i.e., instruments with the same sub portfolio are shown as aggregates. If single position results are needed, you can populate the field sub\_portfolio with the unique id.
+ - sub\_portfolio - An identifier for the sub portfolio the instrument belongs to. The sub portfolio defines the finest aggregation level for the Simulation app, i.e., instruments with the same sub portfolio are shown as aggregates. If single position results are needed, you can populate the field sub\_portfolio with the unique id.
  - type - The instrument type, either `bond`, `floater`, `swap`, `swaption`, `callable_bond` or `fxterm`.
 
 Then, it is useful to populate the standard JSONrisk attributes for financial instruments, such as

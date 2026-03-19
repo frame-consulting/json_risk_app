@@ -75,7 +75,7 @@ function boxmuller(seed_text){
 function obligo(vd, cf){
 	let res=0;
 	for (let d of Object.keys(cf)){
-		if (JsonRisk.get_safe_date(d)<=vd) continue; // past cashflow
+		if (JsonRisk.date_or_throw(d)<=vd) continue; // past cashflow
 		res+=cf[d]; // future cashflow
 	}
 	return res>0 ? res : 0;
@@ -83,7 +83,7 @@ function obligo(vd, cf){
 
 exports.simulation_once=function(){
     // brief credit portfolio model
-	const N=this.num_scen;
+	const N=this.num_scenarios;
     const credit_loss=new Array(N);
 
 	// get obligo and recovery
@@ -92,15 +92,15 @@ exports.simulation_once=function(){
 	let recovery=0.5;
 
 	// map pd and rating
-	let pd=rating_to_pd(this.instrument);
-	this.results.rating=this.instrument.rating || 'NR';
+	let pd=rating_to_pd(this.instrument_json);
+	this.results.rating=this.instrument_json.rating || 'NR';
 	if(!pd) return; // instrument is not rated, give up	
 	this.results.expected_credit_loss=this.results.obligo*(1-recovery)*pd;
 
 	
 	// simulate
 	let random_global=boxmuller("" + this.params.valuation_date); // global economy is always the same, initialize based on valuation date
-	let random_address=boxmuller("" + this.instrument.id) // address has individual randomness (to do: initialize randomness based on address identifier instead of id)
+	let random_address=boxmuller("" + this.instrument_json.id) // address has individual randomness (to do: initialize randomness based on address identifier instead of id)
 	let r,loss;
 	let e_global=0.5;
 	let w_global=Math.sqrt(e_global);

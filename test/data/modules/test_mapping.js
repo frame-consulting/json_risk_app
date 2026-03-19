@@ -1,35 +1,38 @@
 exports.instrument_mapping=function(){
-	const t=this.instrument.test_code
+	const t=this.instrument_json.test_code
 	// rate and daycount
 	if(t % 2 < 1){
-		this.instrument.dcc="act/365";
-		this.instrument.fixed_rate=0.0365;
+		this.instrument_json.dcc="act/365";
+		this.instrument_json.fixed_rate=0.0365;
 	}else{
-		this.instrument.dcc="act/360";
-		this.instrument.fixed_rate=0.0360;
+		this.instrument_json.dcc="act/360";
+		this.instrument_json.fixed_rate=0.0360;
 	}
 
 	// assets and liabilities
 	if(t % 4 < 2){
-		this.instrument.accounting="assets";
+		this.instrument_json.accounting="assets";
 	}else{
-		this.instrument.accounting="liabilities";
-		this.instrument.notional*=-1;
+		this.instrument_json.accounting="liabilities";
+		this.instrument_json.notional*=-1;
 	}
+	
+	// calendar
+	this.instrument_json.calendar="";
 
 	// tenor
-	this.instrument.tenor=12
+	this.instrument_json.tenor=12;
 
 	// start date
-	this.instrument.effective_date="2023-12-31";
+	this.instrument_json.effective_date="2023-12-31";
 
 	// maturities starting from one year
-	this.instrument.maturity=new Date(2025,0,t*8);
+	this.instrument_json.maturity=new Date(2025,0,t*8);
 	
-	if ('bond'===this.instrument.type) return 0;
+	if ('bond'===this.instrument_json.type) return 0;
 	// fields for callables
 
 	// call date starting from 6 months
-	this.instrument.first_exercise_date=new Date(2024,6,t*4);
-	this.instrument.call_tenor=t % 12;
+	this.instrument_json.first_exercise_date=new Date(2024,6,t*4);
+	this.instrument_json.call_tenor=t % 12;
 }

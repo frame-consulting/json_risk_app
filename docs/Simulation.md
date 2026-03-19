@@ -1,5 +1,5 @@
-# **Portfolio Pricing** 
-In the Pricing applet, present values can be calculated ad-hoc for entire portfolios under scenarios. Calculations do not require CPU resources on the server, but are carried out in the browser. Moreover, it is not necessary to save data on the server backend to perform calculations. The relevant data such as portfolio, parameters or even scenarios can be imported or entered directly in the Pricing applet, i.e. no special permissions are required. However, data on the server may be used if the user has read permissions. For analyzing just a single instrument, you can use the analysis functionality which also includes the analysis of all cash flows. For more details, see [documentation of JSON risk Analysis applet](/docs/Analysis.md).  
+# **Simulation** 
+In the Simulation applet, simulations can be calculated ad-hoc for entire portfolios under scenarios. Calculations do not require CPU resources on the server, but are carried out in the browser. Moreover, it is not necessary to save data on the server backend to perform calculations. The relevant data such as portfolio, parameters or even scenarios can be imported or entered directly in the Simulation applet, i.e. no special permissions are required. However, data on the server may be used if the user has read permissions. For analyzing just a single instrument, you can use the analysis functionality which also includes the analysis of all cash flows. For more details, see [documentation of JSON risk Analysis applet](/docs/Analysis.md).  
 
 
 ## Table of contents
@@ -10,11 +10,11 @@ In the Pricing applet, present values can be calculated ad-hoc for entire portfo
 2. [Run calculations](#calc)
  
 ## Input data <a name="data" style="padding-top: 50px"></a>
-In order for the Pricing applet to calculate present values, a portfolio and a parameter set must be provided on the Portfolio and Parameters tabs. Optionally, a scenario group can also be added on the Scenarios tab. For data requirements and data formats for a portfolio, a parameter set and a scenario group see [documentation of JSON risk Portfolios applet ](/docs/Portfolios.md), [documentation of JSON risk Parameters applet](/docs/Parameters.md) and [documentation of JSON risk Scenarios applet](/docs/Scenarios.md).
+In order for the Simulation applet to run simulation, a portfolio and a parameter set must be provided on the Portfolio and Parameters tabs. Optionally, a scenario group can also be added on the Scenarios tab. For data requirements and data formats for a portfolio, a parameter set and a scenario group see [documentation of JSON risk Portfolios applet ](/docs/Portfolios.md), [documentation of JSON risk Parameters applet](/docs/Parameters.md) and [documentation of JSON risk Scenarios applet](/docs/Scenarios.md).
 
 #### Portfolio <a name="port" style="padding-top: 50px"></a>
 
-There are three ways to provide the portfolio for the calculations within the JSON risk pricing applet:
+There are three ways to provide the portfolio for the calculations within the JSON risk Simulation applet:
   - **Load portfolio from server backend**: choose date and name of the portfolio saved on the server backend in the corresponding dropdown boxes -> click **`Load Portfolio`**.
   
   - **Import portfolio (JSON or CSV file) from local system**: click **`Import (csv)`** or **`Import (json)`** -> search for the file in the local file browser to import.
@@ -33,11 +33,11 @@ It is also possible to modify or remove single instruments to/from the displayed
   
 For later reuse, the portfolio can also be exported as CSV or JSON file by clicking **`Export csv`** or **`Export json`**.
 
-**Remark: Editing portfolios in the Pricing applet does not change any data on the server backend.**
+**Remark: Editing portfolios in the Simulation applet does not change any data on the server backend.**
 
 #### Parameters <a name="params" style="padding-top: 50px"></a>
 
-There are three ways to provide parameters for the calculations within the JSON risk Pricing applet: 
+There are three ways to provide parameters for the calculations within the JSON risk Simulation applet: 
 
 - **Load parameter set from server backend**: choose name of the parameter set saved on the server backend in the corresponding dropdown box -> click **`Load Params`**.
 
@@ -53,10 +53,10 @@ It is also possible to add or remove individual parameter objects to/from the di
 
 For later reuse, the parameter set can also be exported as JSON file by clicking **`Export`**.
 
-**Remark: Editing parameters in the Pricing applet does not change any data on the server backend.**
+**Remark: Editing parameters in the Simulation applet does not change any data on the server backend.**
 
 #### Scenarios <a name="scenarios" style="padding-top: 50px"></a>
-There are two ways to provide the scenarios for the calculations within the JSON risk pricing applet:
+There are two ways to provide the scenarios for the calculations within the JSON risk Simulation applet:
 
   - **Load scenario group from server backend**: choose name of the scenario group saved on the server backend in the corresponding dropdown boxes -> click **`Load Scenarios`**.
   
@@ -66,7 +66,7 @@ There are two ways to provide the scenarios for the calculations within the JSON
 
 As previously stated, to run calculations it is necessary to provide a portfolio and a corresponding parameter set, that means parameters from the set have to be assigned to instruments in the portfolio. See [documentation of JSON risk app Portfolios applet ](/docs/Portfolios.md). Moreover, it is possible to use scenarios for calculations.
 
-After the data is available in the pricing applet as described in the [Input data ](#data) section above, calculations can be started by clicking **`Calculate`** on the results tab. The calculation progress as well as error messages and warnings are displayed on the tab. The IDs of the instruments that could not be evaluated are also displayed.
+After the data is available in the Simulation applet as described in the [Input data ](#data) section above, calculations can be started by clicking **`Calculate`** on the results tab. The calculation progress as well as error messages and warnings are displayed on the tab. The IDs of the instruments that could not be evaluated are also displayed.
 
 To analyze or export the results the Reports applet with the results can be opened directly by clicking **`Open report`**. See [documentation of JSON risk Reports applet](/docs/Reports.md) for details.
 
