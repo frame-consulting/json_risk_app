@@ -12,8 +12,6 @@
     	<!-- Custom styles for this template -->
     	<link href="/assets/css/dashboard.css" rel="stylesheet">
 		<link href="/assets/css/modal.css" rel="stylesheet">
-    	<!-- Custom styles for Apps -->
-    	<link rel="stylesheet" href="/assets/css/expanded_own_bootstrap_css.css">
     	<!-- angular js-->
 		<script src="/assets/js/angular.min.js"></script>
 		<!-- Papa Parse -->
@@ -85,7 +83,7 @@
        			<div class="col-md-10 px-3 mt-4 mb-1">  <!--Zweite Spalte-->
 				<!--PORTFOLIO-->
  					<div id="pills-portfolio" ng-if="display.tab==='portfolio'">
-                		<div class="alert alert-warning" role="alert" ng-if="portfolio===null">
+                		<div class="alert alert-danger" role="alert" ng-if="portfolio===null">
                   			<h4 class="alert-heading">No Portfolio present.</h4>
                   			<p> Import portfolio from file or server.</p>
                   			<hr>
@@ -108,7 +106,7 @@
 								</div>                    			                			
                   			</div>                			
                 		</div><!--Alert Warning-->
-                		<div class="alert alert-success" role="alert" ng-if="portfolio!==null">
+                		<div class="alert alert-secondary" role="alert" ng-if="portfolio!==null">
                   			<h4 class="alert-heading">Portfolio</span></h4>
                   			<hr>
                   			<div class="btn-toolbar mb-2 mb-md-0">
@@ -149,7 +147,7 @@
 						  </div>
 						</div>
 
-                		<div class="alert alert-success" role="alert" ng-if="busy">
+                		<div class="alert alert-secondary" role="alert" ng-if="busy">
                  			<h4 class="alert-heading" >Calculations running...</h4>   
                 		</div>
                 		<div class="table-responsive">
@@ -198,7 +196,7 @@
           			</div>
           			<!--PARAMETERS-->          
           			<div id="pills-params" ng-if="display.tab=='params'">
-          				<div class="alert alert-success" role="alert">
+          				<div class="alert alert-secondary" role="alert">
 							<h4 class="alert-heading">Parameters</h4>
 							<hr>
 							<div class="btn-toolbar mb-2 mb-md-0">
@@ -370,7 +368,7 @@
 					</div>
 					<!--SCENARIOS-->          
           			<div id="pills-scenarios" ng-if="display.tab=='scenarios'">
-          				<div class="alert alert-success" role="alert">
+          				<div class="alert alert-secondary" role="alert">
 							<h4 class="alert-heading">Scenarios</h4>
 							<hr>
 							<div class="btn-toolbar mb-2 mb-md-0">
@@ -479,7 +477,7 @@
      			
          		<!--RESULTS-->
           			<div id="pills-res" ng-show="display.tab=='results'">
-            			<div class="alert alert-warning" role="alert" ng-if="portfolio===null">
+            			<div class="alert alert-danger" role="alert" ng-if="portfolio===null">
               				<h4 class="alert-heading">No Portfolio present.</h4>
               				<p> Import portfolio from file or server.</p>
               				<hr>
@@ -490,7 +488,7 @@
                 				</div>
               				</div>
             			</div>            	
-                		<div class="alert alert-success" role="alert" ng-if="res || busy">
+                		<div class="alert alert-secondary" role="alert" ng-if="res || busy">
                  			<h4 class="alert-heading" ng-if="busy">Calculations running on {{conc | number:0}} parallel execution threads...</h4>
                  			<h4 class="alert-heading" ng-if="!busy">Calculations completed for {{portfolio.length - analytics.error_count}} of {{portfolio.length}} instruments.</h4>
                   			<hr>
@@ -505,7 +503,7 @@
                     			</div>
                   			</div>        
                 		</div>        
-            			<div class="alert alert-warning" role="alert" ng-if="res===null && portfolio!==null && !busy">
+            			<div class="alert alert-secondary" role="alert" ng-if="res===null && portfolio!==null && !busy">
               				<h4 class="alert-heading">No Results yet.</h4>
               				<p> Perform calculations to obtain results.</p>
               				<hr>

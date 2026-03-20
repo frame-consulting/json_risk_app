@@ -12,8 +12,6 @@
     	<!-- Custom styles for this template -->
     	<link href="/assets/css/dashboard.css" rel="stylesheet">
 		<link href="/assets/css/modal.css" rel="stylesheet">
-    	<!-- Custom styles for Apps -->
-    	<link rel="stylesheet" href="/assets/css/expanded_own_bootstrap_css.css">   	
     	<!-- angular js-->
 		<script src="/assets/js/angular.min.js"></script>
 		<!-- Papa Parse -->
@@ -29,7 +27,7 @@
     			<img src="/assets/images/favicon.png" width="25" height="25" class="d-inline-block align-top" alt="">
     			JSON risk
   			</a>
-			<span class="navbar-text text-light ml-2 mr-auto">Parameters</span>
+			<span class="navbar-text text-light ml-2">Parameters</span>
 			<span id="jrloginstatus" class="navbar-text text-light mr-2 ml-auto"></span>
     	</nav>   
     	<div class="container-fluid">
@@ -81,7 +79,7 @@
        			<div class="col-md-10 px-3 mt-4 mb-1">  <!--Zweite Spalte-->
           			<!--PARAMETERS-->          
           			<div>
-          				<div class="alert alert-success" role="alert" ng-if="display.popup==='load'">
+          				<div class="alert alert-secondary" role="alert" ng-if="display.popup==='load'">
 							<div class="btn-toolbar mb-2 mb-md-0">							
 								<div class="input-group" ng-if="available_params.list!==null">
 									<select class="custom-select" ng-options="value group by value.substring(0,10) for value in available_params.list" ng-model="available_params.selection">
@@ -94,7 +92,7 @@
 								</div>
 							</div>								
                 		</div>
-          				<div class="alert alert-success" role="alert" ng-if="display.popup==='save'">
+          				<div class="alert alert-secondary" role="alert" ng-if="display.popup==='save'">
 							<div class="btn-toolbar mb-2 mb-md-0">							
 								<div class="input-group" ng-if="available_params.list!==null">
 									<input ng-model="params.name" class="form-control input-sm input-outline-secondary">

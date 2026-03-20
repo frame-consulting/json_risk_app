@@ -11,8 +11,6 @@
     	<link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     	<!-- Custom styles for this template -->
     	<link href="/assets/css/dashboard.css" rel="stylesheet">
-    	<!-- Custom styles for Apps -->
-    	<link rel="stylesheet" href="/assets/css/expanded_own_bootstrap_css.css">   	
     	<!-- angular js-->
 		<script src="/assets/js/angular.min.js"></script>
 		<!-- Papa Parse -->
@@ -87,7 +85,7 @@
        			<div class="col-md-10 px-3 mt-4 mb-1">  <!--Zweite Spalte-->
           			<!--Scenarios-->          
           			<div>
-          				<div class="alert alert-success" role="alert" ng-if="display.popup==='load'">
+          				<div class="alert alert-secondary" role="alert" ng-if="display.popup==='load'">
 							<div class="btn-toolbar mb-2 mb-md-0">							
 								<div class="input-group" ng-if="available_scenarios.list!==null">
 									<select class="custom-select" ng-options="value for value in available_scenarios.list" ng-model="available_scenarios.selection">
@@ -100,7 +98,7 @@
 								</div>
 							</div>								
                 		</div>
-          				<div class="alert alert-success" role="alert" ng-if="display.popup==='save'">
+          				<div class="alert alert-secondary" role="alert" ng-if="display.popup==='save'">
 							<div class="btn-toolbar mb-2 mb-md-0">							
 								<div class="input-group" ng-if="available_scenarios.list!==null">
 									<input ng-model="display.name" class="form-control input-sm input-outline-secondary">
@@ -111,7 +109,7 @@
 								</div>
 							</div>	
                 		</div>
-          				<div class="alert alert-success" role="alert" ng-if="display.popup==='csv'">
+          				<div class="alert alert-secondary" role="alert" ng-if="display.popup==='csv'">
                             <form>
                                 <div class="form-group col-4">
                                     <label for="csv_type">CSV contains</label>

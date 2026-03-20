@@ -308,9 +308,9 @@ app.controller('main_ctrl', ['$scope', '$http', function($scope, $http) { // Con
 		$scope.editor.valid=false;
 		$scope.editor.msg="";
 		try{
-			JsonRisk.valuation_date=new Date(2000,0,1);
+			JsonRisk.valuation_date="2000-01-01";
 			console.debug('watching editor.json', $scope.editor.json);
-			JsonRisk.get_internal_object(JSON.parse($scope.editor.json)); //test if JSON is valid at all and if instrument is valid
+			JsonRisk.make_instrument(JSON.parse($scope.editor.json)); //test if JSON is valid at all and if instrument is valid
 
 		}catch(e){
 			$scope.editor.msg=e.message;

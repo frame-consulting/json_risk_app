@@ -27,17 +27,20 @@
 	  </a>
 	  <span id="jrloginstatus" class="navbar-text text-light ml-auto"></span>
       <ul class="navbar-nav px-3">
-
-	<form id="jrlogin" class="form-inline mt-2 mt-md-0" onsubmit="jrlogin();return false;" enctype="multipart/form-data">
-		<input class="form-control form-control-dark mr-sm-2" type="text" placeholder="Instance" name="ins" required autofocus>            
-	    <input class="form-control form-control-dark mr-sm-2" type="text" placeholder="User Name" name="sub" required>
-        <input class="form-control form-control-dark mr-sm-2" type="password" placeholder="Password" name="pwd">
-        <button class="btn btn-light my-2 my-sm-0" type="submit">Login</button>
-	</form>
-	<form id="jrlogout" class="form-inline mt-2 mt-md-0 collapse" onsubmit="jrlogout();return false;">
-        <button class="btn btn-light my-2 my-sm-0" type="submit">Logout</button>
-	</form>
-	</ul>
+        <li class="nav-item">
+            <form id="jrlogin" class="form-inline mt-2 mt-md-0" onsubmit="jrlogin();return false;" enctype="multipart/form-data">
+	            <input class="form-control form-control-dark mr-sm-2" type="text" placeholder="Instance" name="ins" required autofocus>            
+                <input class="form-control form-control-dark mr-sm-2" type="text" placeholder="User Name" name="sub" required>
+                <input class="form-control form-control-dark mr-sm-2" type="password" placeholder="Password" name="pwd">
+                <button class="btn btn-light my-2 my-sm-0" type="submit">Login</button>
+            </form>
+	    </li>
+	    <li class="nav-item">
+	        <form id="jrlogout" class="form-inline mt-2 mt-md-0 collapse" onsubmit="jrlogout();return false;">
+                <button class="btn btn-light my-2 my-sm-0" type="submit">Logout</button>
+	        </form>
+	    </li>
+	  </ul>
     </nav>
 
     <div class="container-fluid">
