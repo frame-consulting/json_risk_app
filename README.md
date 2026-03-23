@@ -145,7 +145,7 @@ More documentation on various topics is under the docs folder in this repository
 
 ### Perform Calculations
 
- - Start ad-hoc calculations in your browser with the [Pricing applet ](/docs/Pricing.md)
+ - Start ad-hoc calculations in your browser with the [Simulation applet ](/docs/Simulation.md)
  - Plan and start calculations and other tasks on the server backend with the [Batch applet ](/docs/Batch.md)
 
 ### Analyze Results
