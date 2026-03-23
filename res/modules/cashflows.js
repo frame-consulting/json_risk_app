@@ -1,14 +1,6 @@
-function dateformat(d){
-	return  d.getFullYear()
-		+ "-"
-		+ ("0"+(d.getMonth()+1)).slice(-2)
-		+ "-"
-		+ ("0" + d.getDate()).slice(-2);
-}
-
 function add_cashflow(date, amount, target){
     if (amount==0) return;
-	let key=dateformat(date);
+	let key=JsonRisk.date_to_date_str(date);
 	if (!target[key]){
 		target[key]=amount;
 	}else{
@@ -17,11 +9,10 @@ function add_cashflow(date, amount, target){
 	if(0===target[key]) delete target[key];
 }
 
-// must run valuation for cashflows to reflect the right projected rates
-exports.depends=['valuation'];
-
 exports.simulation_once=function(){
     if (!("legs" in this.instrument)) return;
+    // evaluate leg instrument to project non-fix payments
+    this.instrument.value(this.params);
     const legs=this.instrument.legs;
 
 	let cashflow={},interest_cashflow={},principal_cashflow={};
