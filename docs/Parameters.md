@@ -109,14 +109,14 @@ Find below an example of a parameter set with all kinds of market data and calen
  	"name": "parameter_set",
  	"valuation_date": "2000-01-01",
  	"scalars":{"USD":{"type": "equity / fx",
-					  "value": [1.0764]
+					  "value": 1.0764
 				}, 
 			   "GBP": {...}
 	},
  	"curves":{"curve_1":{"type": "yield",
  						 "tags": ...,
 						 "labels": ["1Y","5Y","10Y"],
-						 "zcs":[[-0.795291,-0.778788,-0.699913]]
+						 "zcs":[-0.795291,-0.778788,-0.699913]
 						 },
 			  "curve_2": {...}
     },
@@ -124,7 +124,7 @@ Find below an example of a parameter set with all kinds of market data and calen
  							 "tags": ...,
 							 "labels_expiry": ["1Y","2Y"],
 							 "labels_term": ["1Y"],
-							 "values": [[[51.85768],[66.03413]]]
+							 "values": [[51.85768],[66.03413]]
    			   	},
    			   "surface_2":{...}
     },
