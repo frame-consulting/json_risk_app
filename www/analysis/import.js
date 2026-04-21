@@ -28,8 +28,10 @@ const load_params_list=function(sc){
 	req.addEventListener('load', function(evt){
 		if(req.status===200){
 			sc.params.available=JSON.parse(req.responseText);
-			//sc.params.selection=sc.params.available[0];
-            sc.$apply();                       
+			if(sc.params.available.length){
+			    sc.params.selection=sc.params.available[0];
+		    }
+            load_params_from_server(sc);                       
 		}else{
 			//silent error
 			console.log("Could not load list of available params from server");
