@@ -18,18 +18,21 @@ function send_token($user, $redirect=false){
 		'exp' => $exp
 	];
 
-	# send signed token per httponly cookie securely
-	setcookie(
-		'access_token',
-		tokenize($token),
-		$exp,  	# expires
-		'/', 	# path
-		'', 	# domain    
-		false, 	# secure
-		true	# httponly
-	);	
-	# send non-signed token info per http response for information purposes
+	# send signed token per httponly cookie securely	
+    $secure = !in_array($_SERVER['HTTP_HOST'], [
+        'localhost',
+        '127.0.0.1'
+    ]);
 
+    setcookie('access_token', tokenize($token), [
+        'expires'  => $exp,
+        'path'     => '/',
+        'secure'   => $secure,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
+	
+	# send non-signed token info per http response for information purposes
 	if ($redirect){
 		header('Location: /');
 		exit();	
