@@ -47,7 +47,7 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
         json: null,
         index: -1
     };
-    wrk = [];
+
     $scope.analytics = {
         error_count: 0,
         warning_count: 0,
@@ -463,17 +463,24 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
         $scope.warnings = null;
     }
 
-    $scope.cancel = function() {
-        while (wrk.length) {
-            wrk[0].terminate();
-            wrk.shift();
+    const wrk = [];
+    const reset_workers = function() {
+        for(const w of wrk){
+            w.onmessage=null;
+            w.terminate();
         }
+        wrk.length=0;
+    }
+
+    $scope.cancel = function() {
+        reset_workers();
         $scope.busy = false;
         $scope.res = null;
         $scope.$apply();
     }
 
     $scope.delete_results = function() {
+        reset_workers();
         $scope.res = null;
         $scope.errors = null;
         $scope.warnings = null;
@@ -511,8 +518,6 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
         if (j >= $scope.warnings.length) $scope.warnings.push(obj); //new warning
 
     }
-
-
 
     $scope.calculate = function() {
 
@@ -564,10 +569,9 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
 
                 }
 
-                if (0 === incomplete) { //all done, terminate workers and exit
-                    while (wrk.length) {
-                        wrk[0].terminate();
-                        wrk.shift();
+                if (0 === incomplete) { //all done, deactivate handlers and exit
+                    for(const w of wrk) {
+                        w.onmessage=null;
                     }
                     $scope.remaining = 0;
                     $scope.busy = false;
