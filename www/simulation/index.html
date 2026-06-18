@@ -135,12 +135,11 @@
 							  <div class="modal-body">
 								<textarea ng-model="editor.json" class="form-control input-sm input-outline-secondary mb-1" rows="12"></textarea>
 								
-								<strong ng-if="!editor.valid">Invalid JSON:</strong>                  
-								<p ng-if="!editor.valid">{{editor.msg}}</p>
+								<p ng-if="!editor.valid_json || !editor.valid_instrument">{{editor.msg}}</p>
 							  </div>
 							  <div class="modal-footer">
-								<button type="button" class="btn btn-sm btn-primary" ng-click="save_instrument()" ng-if="editor.index>=0 && editor.valid">Save</button>
-								<button type="button" class="btn btn-sm btn-primary" ng-click="add_as_new()" ng-if="editor.valid">Add as new item</button>
+								<button type="button" class="btn btn-sm btn-primary" ng-click="save_instrument()" ng-if="editor.index>=0 && editor.valid_json">Save</button>
+								<button type="button" class="btn btn-sm btn-primary" ng-click="add_as_new()" ng-if="editor.valid_json">Add as new item</button>
 								<button type="button" class="btn btn-sm btn-secondary" ng-click="cancel_editor()">Cancel</button>
 							  </div>
 							</div>
@@ -557,6 +556,7 @@
     	</script>
 		<script src="main.js"></script>
 		<script src="/assets/js/aggregate.js"></script>
+		<script src="/assets/js/util.js"></script>
 		<script src="import.js"></script>
 		<script src="export.js"></script>
   	</body>

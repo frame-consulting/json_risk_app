@@ -22,16 +22,23 @@ const filter_scalars=function(value){
 	return "Error";
 }
 
-const default_instrument_first_columns = ["id","type","sub_portfolio"];
-
 const collect_instrument_keys = function(instruments) {
+    // collect keys from all instruments
     let temp = {};
-    Object.assign(temp, ...instruments);
+    for(const i of instruments){
+        Object.assign(temp, i);
+    }
+    // remove hash key property
+    delete temp['$$hashKey'];
+    
+    // remove front properties
+    const first_columns = ["id","type","sub_portfolio"];
+    first_columns.forEach((item) => {delete temp[item];});
+
+    // convert into array and sort
     temp = Object.keys(temp);
-    temp.splice(temp.indexOf('$$hashKey'), 1);
-    default_instrument_first_columns.forEach((item) => temp.splice(temp.indexOf(item), 1));
     temp = temp.sort(function(a,b){ return a.localeCompare(b) });
 
-    return default_instrument_first_columns.concat(temp);
+    // add front properties
+    return [...first_columns, ...temp];
 }
-

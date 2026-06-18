@@ -85,59 +85,7 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
         if (format === 'json') {
             export_to_json_file($scope.portfolio, "portfolio.json"); // function in export.js
         } else if (format === 'csv') {
-            columns = ["id",
-                "type",
-                "sub_portfolio",
-                "notional",
-                "quantity",
-                "market_value",
-                "currency",
-                "maturity",
-                "tenor",
-                "fixed_rate",
-                "float_current_rate",
-                "float_spread",
-                "calendar",
-                "dcc",
-                "bdc",
-                "float_tenor",
-                "float_dcc",
-                "float_bdc",
-                "effective_date",
-                "first_date",
-                "next_to_last_date",
-                "stub_end",
-                "stub_long",
-                "repay_amount",
-                "repay_tenor",
-                "repay_first_date",
-                "repay_next_to_last_date",
-                "repay_stub_end",
-                "repay_stub_long",
-                "interest_capitalization",
-                "linear_amortization",
-                "fixing_first_date",
-                "fixing_next_to_last_date",
-                "fixing_stub_end",
-                "fixing_stub_long",
-                "conditions_valid_until",
-                "residual_spread",
-                "disc_curve",
-                "fwd_curve",
-                "surface",
-                "spread_curve",
-                "settlement_days",
-                "cap_rate",
-                "floor_rate",
-                "is_payer",
-                "is_short",
-                "current_accrued_interest",
-                "first_exercise_date",
-                "call_tenor",
-                "opportunity_spread",
-                "excl_margin",
-                "simple_calibration"
-            ];
+            const columns = collect_instrument_keys($scope.portfolio); // function in util.js
             export_to_csv_file($scope.portfolio, "portfolio.csv", columns); // function in export.js
         }
     }
@@ -154,51 +102,10 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
             type: 'bond',
             sub_portfolio: 'bonds',
             notional: 10000,
-            quantity: null,
-            market_value: null,
             currency: 'EUR',
             maturity: '2030-01-01',
             tenor: 1,
             fixed_rate: 0.01,
-            float_current_rate: null,
-            float_spread: null,
-            calendar: null,
-            dcc: null,
-            bdc: null,
-            float_tenor: null,
-            float_dcc: null,
-            float_bdc: null,
-            effective_date: null,
-            first_date: null,
-            next_to_last_date: null,
-            stub_end: null,
-            stub_long: null,
-            repay_amount: null,
-            repay_tenor: null,
-            repay_first_date: null,
-            repay_next_to_last_date: null,
-            repay_stub_end: null,
-            repay_stub_long: null,
-            interest_capitalization: null,
-            linear_amortization: null,
-            fixing_first_date: null,
-            fixing_next_to_last_date: null,
-            fixing_stub_end: null,
-            fixing_stub_long: null,
-            conditions_valid_until: null,
-            residual_spread: null,
-            disc_curve: null,
-            fwd_curve: null,
-            surface: null,
-            spread_curve: null,
-            settlement_days: null,
-            cap_rate: null,
-            floor_rate: null,
-            is_payer: null,
-            is_short: null,
-            first_exercise_date: null,
-            call_tenor: null,
-            opportunity_spread: null
         });
     }
 
@@ -255,20 +162,31 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
         }
     }
 
-
     $scope.$watch('editor.json', function() {
 
-        $scope.editor.valid = false;
+        $scope.editor.valid_json = false;
+        $scope.editor.valid_instrument = false;
         $scope.editor.msg = "";
+        let temp=null;
+        
+        // test if JSON is valid at all
         try {
-            JsonRisk.valuation_date = new Date(2000, 0, 1);
-            JsonRisk.get_internal_object(JSON.parse($scope.editor.json)); //test if JSON is valid at all and if instrument is valid
-
+            temp=JSON.parse($scope.editor.json);
         } catch (e) {
-            $scope.editor.msg = e.message;
+            $scope.editor.msg = "Invalid JSON: " + e.message;
             return 0;
         }
-        $scope.editor.valid = true;
+        $scope.editor.valid_json=true;
+        
+        // test if JSON contains valid instrument
+        try {
+            JsonRisk.set_valuation_date("2000-01-01");
+            JsonRisk.make_instrument(temp);
+        } catch (e) {
+            $scope.editor.msg = "Invalid instrument: " + e.message;
+            return 0;
+        }
+        $scope.editor.valid_instrument = true;
     }, true);
 
     function repl(key, value) {

@@ -140,17 +140,18 @@
                                     <h5 class="modal-title">View and edit</h5>
                                 </div>
                                 <div class="modal-body">
-                                    <textarea ng-model="editor.json" class="form-control input-sm input-outline-secondary mb-1" rows="12"></textarea> <strong ng-if="!editor.valid">Invalid JSON:</strong>
-                                    <p ng-if="!editor.valid">{{editor.msg}}</p>
+                                    <textarea ng-model="editor.json" class="form-control input-sm input-outline-secondary mb-1" rows="12"></textarea>
+        							<p ng-if="!editor.valid_json || !editor.valid_instrument">{{editor.msg}}</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-sm btn-primary" ng-click="save_instrument()" ng-if="editor.index>=0 && editor.valid">Save</button>
-                                    <button type="button" class="btn btn-sm btn-primary" ng-click="add_as_new()" ng-if="editor.valid">Add as new item</button>
+                                    <button type="button" class="btn btn-sm btn-primary" ng-click="save_instrument()" ng-if="editor.index>=0 && editor.valid_json">Save</button>
+                                    <button type="button" class="btn btn-sm btn-primary" ng-click="add_as_new()" ng-if="editor.valid_json">Add as new item</button>
                                     <button type="button" class="btn btn-sm btn-secondary" ng-click="cancel_editor()">Cancel</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                                        
                     <div ng-if="!display.show_portfolios" class="table-responsive">
                         <table ng-if="portfolio.intruments!==null" class="table table-responsive table-hover table-sm table-bordered text-nowrap">
                             <thead class="thead-light">
@@ -219,7 +220,7 @@
     <script src="main.js"></script>
     <script src="import.js"></script>
     <script src="export.js"></script>
-	<script src="util.js"></script>
+	<script src="/assets/js/util.js"></script>
 </body>
 
 </html>

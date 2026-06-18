@@ -182,6 +182,7 @@ app.controller('main_ctrl', ['$scope', '$http', function($scope, $http) { // Con
 	$scope.save_instrument=function(){
 		if ($scope.editor.json && $scope.editor.index>=0){
 			$scope.portfolio.instruments[$scope.editor.index]=JSON.parse($scope.editor.json);
+            $scope.editor.index = -1;
 			$scope.update_columns();
 		};
 	}
@@ -303,21 +304,33 @@ app.controller('main_ctrl', ['$scope', '$http', function($scope, $http) { // Con
 		$scope.display.show_portfolios=false;
 		$scope.display.tab='portfolios';
     };
+	
+    $scope.$watch('editor.json', function() {
 
-	$scope.$watch('editor.json', function(){
-		$scope.editor.valid=false;
-		$scope.editor.msg="";
-		try{
-			JsonRisk.valuation_date="2000-01-01";
-			console.debug('watching editor.json', $scope.editor.json);
-			JsonRisk.make_instrument(JSON.parse($scope.editor.json)); //test if JSON is valid at all and if instrument is valid
-
-		}catch(e){
-			$scope.editor.msg=e.message;
-			return 0;
-		}
-		$scope.editor.valid=true;
-	}, true);
+        $scope.editor.valid_json = false;
+        $scope.editor.valid_instrument = false;
+        $scope.editor.msg = "";
+        let temp=null;
+        
+        // test if JSON is valid at all
+        try {
+            temp=JSON.parse($scope.editor.json);
+        } catch (e) {
+            $scope.editor.msg = "Invalid JSON: " + e.message;
+            return 0;
+        }
+        $scope.editor.valid_json=true;
+        
+        // test if JSON contains valid instrument
+        try {
+            JsonRisk.set_valuation_date("2000-01-01");
+            JsonRisk.make_instrument(temp);
+        } catch (e) {
+            $scope.editor.msg = "Invalid instrument: " + e.message;
+            return 0;
+        }
+        $scope.editor.valid_instrument = true;
+    }, true);
 
 	/**
 	 * TODO maybe the following functions should be saved in another file, and used also in pricing
