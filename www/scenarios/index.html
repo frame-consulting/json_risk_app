@@ -244,13 +244,13 @@
 												<thead>
 													<tr>
 														<th scope="col">#</th>
-														<th scope="col" ng-repeat="x in r.labels_x track by $index">{{x}}</th>
+														<th scope="col" ng-repeat="(xidx, x) in r.labels_x">{{x}}</th>
 													</tr>
 												</thead>
 												<tbody>
-													<tr ng-repeat="y in r.values track by $index">
-														<th scope="row">{{r.labels_y[$index]}}</th>
-														<td ng-repeat="v in y track by $index">{{v}}</td>
+													<tr ng-repeat="(yidx, y) in r.labels_y">
+														<th scope="row">{{y}}</th>
+														<td ng-repeat="(xidx, x) in r.labels_x ">{{r.values[xidx][yidx]}}</td>
 													</tr>
 												</tbody>
 											</table>
