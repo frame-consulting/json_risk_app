@@ -160,7 +160,6 @@
                               			<th scope="col">Name</th>
                               			<th scope="col">Type</th>
 										<th scope="col">Tags</th>
-                              			<th scope="col">Scenarios</th>
                               			<th scope="col">Actions</th>
                             		</tr>
                           		</thead>
@@ -169,7 +168,6 @@
                               			<th scope="row">{{key}}</th>
                               			<td><span class="badge badge-secondary">{{value.type}}</span></td>
 										<td><span class="badge badge-primary" ng-repeat="tag in value.tags">{{tag}}</span></td>     
-                              			<td>{{count_scenarios_scalar(value)}}</td> 
                                			<th scope="row">
                                     		<div class="btn-group mr-2">
 												<button type="button" class="btn btn-sm btn-link" ng-click="edit(key,value, 'scalars')">Edit</button>                                        		
@@ -198,7 +196,6 @@
                               			<th scope="col">Type</th>
 										<th scope="col">Tags</th>
                               			<th scope="col">Support Points</th>
-                              			<th scope="col">Scenarios</th>
                               			<th scope="col">Actions</th>
                             		</tr>
                           		</thead>
@@ -208,7 +205,6 @@
                               			<td><span class="badge badge-secondary">{{value.type}}</span></td>
 										<td><span class="badge badge-primary mr-1" ng-repeat="tag in value.tags">{{tag}}</span></td>
                               			<td>{{(value.times || value.days || value.dates || value.labels).length}}</td>                  
-                              			<td>{{count_scenarios_curve(value)}}</td> 
                               			<th scope="row">
                                     		<div class="btn-group mr-2">
 												<button type="button" class="btn btn-sm btn-link" ng-click="edit(key,value, 'curves')">Edit</button>   
@@ -238,7 +234,6 @@
 										<th scope="col">Tags</th>
                               			<th scope="col">Expiries</th>
                               			<th scope="col">Terms</th>
-                              			<th scope="col">Scenarios</th>
                               			<th scope="col">Actions</th>
                             		</tr>
                           		</thead>
@@ -249,7 +244,6 @@
 										<td><span class="badge badge-primary mr-1" ng-repeat="tag in value.tags">{{tag}}</span></td>
                               			<td>{{value.expiries.length || value.labels_expiry.length}}</td>
                               			<td>{{value.terms.length || value.labels_term.length}}</td>
-                              			<td>{{count_scenarios_surface(value)}}</td>   
                               			<th scope="row">
                                     		<div class="btn-group mr-2">
 												<button type="button" class="btn btn-sm btn-link" ng-click="edit(key,value, 'surfaces')">Edit</button>   

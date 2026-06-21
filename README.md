@@ -163,5 +163,5 @@ More documentation on various topics is under the docs folder in this repository
  - The [Instruments guide](https://www.jsonrisk.de/01_Documentation/01_Instruments.html) summarizes supported instruments and features
  - The [Fields guide](https://www.jsonrisk.de/01_Documentation/02_Instrument_fields.html) contains a complete list of JSON fields for describing instrument terms and conditions
  - The [Data types guide](https://www.jsonrisk.de/01_Documentation/03_Data_types.html) explains the data types used in the JSON fields
- - The [Parameters guide](https://www.jsonrisk.de/01_Documentation/02_Parameters.html) explains how to represent parameters for valuation, e.g., yield curves and surfaces.
+ - The [Parameters guide](https://www.jsonrisk.de/01_Documentation/04_Parameters.html) explains how to represent parameters for valuation, e.g., yield curves and surfaces.
  - The [Schedule generation guide](https://www.jsonrisk.de/01_Documentation/05_Schedule_generation.html) explains how JSON risk generates schedules for interest rate instruments.

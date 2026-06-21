@@ -247,18 +247,6 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
         export_to_json_file($scope.params, "params.json"); // Funktion aus export.js
     }
 
-    $scope.count_scenarios_curve = function(curve) {
-        return Array.isArray((curve.dfs || curve.zcs)[0]) ? (curve.dfs || curve.zcs).length : 1;
-    }
-
-    $scope.count_scenarios_surface = function(surface) {
-        return Array.isArray(surface.values[0][0]) ? surface.values.length : 1;
-    }
-
-    $scope.count_scenarios_scalar = function(scalar) {
-        return Array.isArray(scalar.value) ? scalar.value.length : 1;
-    }
-
     $scope.remove_parameter = function(key, value, kind) {
 
         if (kind === 'scalars') {

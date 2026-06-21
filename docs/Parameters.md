@@ -48,11 +48,11 @@ For the sake of convenience, it is also possible to add new data objects to a pa
 
  - Generally: The CSV is semicolon or comma separated. Numbers are represented with a dot as decimal separator.
 
- - Scalars: First column is empty. Second column contains the name in the first row and the value in the second row. During import the type is initialized with the default value "equity / fx". Format example:
+ - Scalars: File can contain more than one scalar and contains the names in the first row and the values in the second row. During import the type is initialized with the default value "equity / fx". Format example:
 
 ```  
-	;USD
-	;1.0764
+	GBP;USD;JPY
+	2.0456;1.0764;142.55
 ```
 
  - Curves: The first field in the first row contains the name of the curve. Other columns in the first line correspond to support points. They must be given as labels, e.g. "30D", "1M" or "1Y". The second line contains an empty first column and the curve values in the other columns, each corresponding to one of the support points. During import, the type is initialized with the default value "yield / spread". Values are imported as zero coupon rates with convention Actual/365 and annual compounding. Format example:
@@ -62,12 +62,12 @@ For the sake of convenience, it is also possible to add new data objects to a pa
     ,-0.795291,-0.778788,-0.699913
 ```
 
- - Surfaces: The first field in the first row contains the name of the surface. Other columns in the first line correspond to the expiries. Each additional line contains the term of the surface in the first field and the values in the other fields, each corresponding to the expiry in the top row and the term in the first column. Expiries and terms need to be given as labels. During import, the type is initialized with the default value "bachelier". Values are imported as annual basis point volatilities, e.g., a value of 100 corresponds to one percent annual volatility. Format example:
+ - Surfaces: The first field in the first row contains the name of the surface. Other columns in the first line correspond to the expiries. Each additional line contains the term of the surface in the first field and the values in the other fields, each corresponding to the expiry in the top row and the term in the first column. Expiries and terms need to be given as labels. During import, the type is initialized with the default value "bachelier". Format example:
   
 ```
-    EXAMPLE_SURFACE,1Y,5Y
-    1Y,51.85,78.09
-    2Y,66.03,88.01
+    EXAMPLE_SURFACE,1Y,5Y,10Y
+    1Y,0.0085,0.0090,0.0101
+    2Y,0.0066,0.0095,0.0120
 ```
   
  - Calendars: This is a single-column file. The first line contains the name of the calendar and each other line contains a date in YYYY-MM-DD, YYYY/MM/DD or DD.MM.YYYY format.

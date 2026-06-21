@@ -18,7 +18,7 @@ I. functions called by main.js
 /* I. functions called by main.js */
 
 
-var load_params_from_server=function(sc){
+const load_params_from_server=function(sc){
 	if (!sc.available_params.selection){
 		alert("No parameter set selected");
 		return 0;
@@ -53,7 +53,7 @@ var load_params_from_server=function(sc){
 	req.send();
 }
 
-var load_params_list=function(sc){
+const load_params_list=function(sc){
 	var req=new XMLHttpRequest();	
 	req.addEventListener('load', function(evt){
 		if(req.status===200){
@@ -73,7 +73,7 @@ var load_params_list=function(sc){
 	req.send();	
 }
 
-var import_data_csv=function(fil, kind, sc){
+const import_data_csv=function(fil, kind, sc){
         var pp_config={
 	        header: false,
         	dynamicTyping: true,
@@ -82,149 +82,108 @@ var import_data_csv=function(fil, kind, sc){
 	        skipEmptyLines: true
         };
     
+        const tags=['csv'];
+    
         if (kind==="params"){
         }else if (kind==="scalar"){
                 pp_config.complete=function(results,file){
                         var i,j;
                         var column;
-                        var scenarios=[];
                         if (!sc.params) sc.params={};
                         if (!sc.params.scalars) sc.params.scalars={};    
-                        for (j=1;j<results.data[0].length;j++){
-                                sc.params_count=sc.params_count+1;
-                                column=[];
-                                for (i=1; i<results.data.length;i++){
-                                        if (results.data[i].length!==results.data[0].length) continue;
-                                        scenarios.push(results.data[i][0]);
-                                        column.push(results.data[i][j]);
-                                }
-                                sc.params.scalars[results.data[0][j]]={
+                        for (j=0;j<results.data[0].length;j++){
+                                // name
+                                const name=results.data[0][j];
+                                if(typeof name !== "string") continue;
+                                if (name.length===0) continue;
+                                // insert scalar
+                                const value=results.data[1][j];
+                                sc.params.scalars[name]={
                                         type: "equity / fx",
-                                        value: column
+                                        value,
+                                        tags
                                 };
                         }
-                        if (!sc.params.scenario_names) {
-                            sc.params.scenario_names=scenarios;
-                        }else{
-                            if (scenarios.length > sc.params.scenario_names) sc.params.scenario_names=scenarios;
-
-                        };
-
-                       if (results.data[0].length===1) sc.params_count=sc.params_count+1;
                         sc.$apply();
                 }        
         }else if (kind==="curve"){
                 pp_config.complete=function(results,file){
-                        var i,j;
-                        var labels=[];
-                        var zcs=[];
-                        var row;
-                        var scenarios=[];
-                        for (j=1;j<results.data[0].length;j++){  //Zeile
-                                labels.push(results.data[0][j]);
-                        }                     
-                        for (i=1; i<results.data.length;i++){    //Spalte 
-                                if (results.data[i].length!==results.data[0].length) continue;
-                                scenarios.push(results.data[i][0]);
-                                row=new Array(results.data[0].length-1);
-                                for (j=0;j<row.length;j++){
-
-                                        row[j]=results.data[i][j+1];
-                                }
-                                zcs.push(row);
+                        // name
+                        const name=results.data[0][0];
+                        
+                        // labels
+                        const labels=[];
+                        for (j=1;j<results.data[0].length;j++){  // first row
+                            labels.push(results.data[0][j]);
                         }
                         
+                        // zero rates
+                        const zcs=[];
+                        for (j=1;j<results.data[1].length;j++){
+                            zcs.push(results.data[1][j]);
+                        }
+                        
+                        // insert curve
                         if (!sc.params) sc.params={};
                         if (!sc.params.curves) sc.params.curves={};
-                        if (!sc.params.scenario_names) {
-                            sc.params.scenario_names=scenarios;
-                        }else{
-                            if (scenarios.length > sc.params.scenario_names) sc.params.scenario_names=scenarios;
-
-                        };
                         sc.params.curves[results.data[0][0]]={
                                 type: "yield / spread",
-                                labels: labels,
-                                zcs: zcs
+                                labels,
+                                zcs,
+                                tags
                         }
-                        sc.params_count=sc.params_count + 1;
                         sc.$apply();
                 }
         
         }else if (kind==="surface"){
                 pp_config.complete=function(results,file){
-                        var i,j;
-                        var labels_expiry=[];
-                        var labels_term=[];
-                        var values=[];
-                        var row;
-
-                        for (j=1;j<results.data[0].length;j++){
-
-                                labels_term.push(results.data[0][j]);
+                        // name
+                        const name=results.data[0][0];
+                        // expiries
+                        const labels_expiry=[];
+                        for (let i=1;i<results.data[0].length;i++){
+                                labels_expiry.push(results.data[0][i]);
                         }
 
-                        var tmpexpiry=[];
-                        for (i=1; i<results.data.length;i++){  
-
-                                    if (results.data[i].length!==results.data[0].length) continue; 
-                                    tmpexpiry.push(results.data[i][0]);
-                                    labels_expiry = tmpexpiry.filter((v, i, a) => a.indexOf(v) === i);   
+                        // terms
+                        const labels_term=[];
+                        for (let j=1; j<results.data.length;j++){  
+                                    if (results.data[j].length!==results.data[0].length) continue; 
+                                    labels_term.push(results.data[j][0]);
+                        }
+                        
+                        // values
+                        const values=labels_expiry.map(()=>new Array(labels_term.length));
+                        
+                        let idx_exp=0;
+                        for (let i=1;i<results.data[0].length;i++){
+                            let idx_term=0;
+                            for (let j=1; j<results.data.length;j++){  
+                                if (results.data[j].length!==results.data[0].length) continue; 
+                                values[idx_exp][idx_term]=results.data[j][i];
+                                idx_term++;
+                            }
+                            idx_exp++;
                         }
 
-                        if (Math.round(tmpexpiry.length / labels_expiry.length)!=tmpexpiry.length / labels_expiry.length) {
-                                    sc.upload_error="Could not upload surfaces " + results.data[0][0] + ": please check columns and rows.";
-                                    sc.$apply();
-                                    return 
-                        };
-                        scenario=new Array(tmpexpiry.length / labels_expiry.length);
-                        for (n=0;n<labels_expiry.length;n++) {
-                                if (tmpexpiry.filter(x => x === labels_expiry[0]).length!=tmpexpiry.filter(x => x === labels_expiry[n]).length){  // Errorhandling   
-                                    sc.upload_error="Could not upload surfaces " + results.data[0][0] + ": different sceanrio count for expiries.";
-                                    sc.$apply();
-                                    return   
-                                }  
-                            var k=0;                        
-                            for (i=1; i<results.data.length;i++){ 
-                                    if (undefined===results.data[i]) continue;
-                                    if (results.data[i][0]!==labels_expiry[n]) continue;
-                                    if (results.data[i].length!==results.data[0].length){ 
-                                        sc.upload_error="Could not upload surfaces " + results.data[0][0] + ": different term count for expiries.";
-                                        sc.$apply();
-                                        return 
-                                    }
-                                    if(undefined===scenario[k]) scenario[k]=[];
-                                    row=new Array(results.data[0].length-1);  
-                                    for (j=0;j<row.length;j++){    
-                                            row[j]=results.data[i][j+1]; 
-                                    }
-                                    scenario[k].push(row); 
-                                    delete results.data[i];
-                                    k=k+1;
-                            }                       
-                        }
-                        values=scenario;
-
-
+                        // insert surface
                         if (!sc.params) sc.params={};
                         if (!sc.params.surfaces) sc.params.surfaces={};
                         sc.params.surfaces[results.data[0][0]]={
                                 type: "bachelier",
-                                labels_expiry: labels_expiry,
-                                labels_term: labels_term,
-                                values: values
+                                labels_expiry,
+                                labels_term,
+                                values,
+                                tags
                         }
-
-                        sc.params_count=sc.params_count + 1;
                         sc.$apply();
                 }
         }else if (kind==="portfolio"){
                 pp_config.complete=function(results,file){
                         if (!sc.portfolio) sc.portfolio=[];
-                        var i,j, error_found;
-                        for (i=0; i<results.data.length; i++){
-                                error_found=false;
-                                for (j=0; j<results.errors.length; j++){
+                        for (let i=0; i<results.data.length; i++){
+                                let error_found=false;
+                                for (let j=0; j<results.errors.length; j++){
                                         if (results.errors[j].row===i) error_found=true;
                                 }
                                 if (!error_found) sc.portfolio.push(results.data[i]);
@@ -232,21 +191,17 @@ var import_data_csv=function(fil, kind, sc){
                         sc.$apply();
                 }
                 pp_config.header=true;
-        
-        
         }else if (kind==="calendar"){
                 pp_config.complete=function(results,file){
-                        var i;
-                        var dates=[];
+                        const name=results.data[0];
+                        const dates=[];
                         if (!sc.params) sc.params={};
                         if (!sc.params.calendars) sc.params.calendars={};    
-                        for (j=1;j<results.data.length;j++){
+                        for (let j=1;j<results.data.length;j++){
                                 dates.push(results.data[j][0])                               
-                                };
-                                sc.params.calendars[results.data[0]]={
-                                        dates: dates
-                        		}
-                        sc.params_count=sc.params_count + 1;
+                        };
+                        sc.params.calendars[name]={dates};
+   
                         sc.$apply();                       
                 }       
         }else{
@@ -263,7 +218,7 @@ var import_data_csv=function(fil, kind, sc){
 
 
 
-var import_data_json=function(fil, sc){   
+const import_data_json=function(fil, sc){   
 	fil.text().then(text => {		
 		sc.params=JSON.parse(text);	
 		var keys=['curves','scalars','surfaces','calendars'];
