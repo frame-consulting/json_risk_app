@@ -18,8 +18,8 @@ Here is an outline of the structure of a scenario:
    - a **Model**: Either **additive**, **multiplicative** or **absolute**. If additive, the values of this rule are added to each affected risk factor. If multiplicative, the values of this rule are multiplied with the values of each affected risk factor. If absolute, the values of this rule replace the values of each affected risk factor.
    - a **Values** table:
      - **X-axis labels**: for curves these are the support points; for surfaces these are the expiries of the option.
-     - **Y-axis labels**: for curves these labels have no meaning; for surfaces these are the terms of the underlying of the option.
-     - **Values**: an array of values corresponding to labels.
+     - **Y-axis labels**: for curves these labels have no meaning; for surfaces these are the terms of the underlying of the option, or the strikes.
+     - **Values**: an array of arrays of values corresponding to labels.
 
 ## Management of a scenario group <a name="manage" style="padding-top: 50px"></a>
 
@@ -85,7 +85,7 @@ For scalars, the table should contain two lines and two columns only. Labels are
 With the **additive** model, the last example rule would increase the scalar by 0.01 or shift a curve or surface by 0.01 in a parallel sense. With the **multiplicative** model, the rule would increase a scalar or all the values of a curve or surface by 1 percent. With the **abslute** model, the scalar, curve or surface would attain the absolute value of 0.01. For curves and surface that value would be constant over all support points.
 
 ## Data format <a name="format" style="padding-top: 50px"></a>
-Find below an example of a scenario group in JSON format.
+Find below an example of a scenario group in JSON format. Note that the structure of the `values` array of arrays must correspond to the label dimensions. The length of `values` must match the length of `labels_x`, the length of each element in `values` must match the length of `labels_y`. Labels must be strings that can be converted by JSONRisk into a time period, or strings that represent numbers.
 
 ```
 [
@@ -95,17 +95,17 @@ Find below an example of a scenario group in JSON format.
    {
     "model": "additive",
     "labels_x": [
-     "1W",
-     "3M"
+     "7d",
+     "3m",
+     "2y",
     ],
     "labels_y": [
      "1M"
     ],
     "values": [
-     [
-      0.0001,
-      0
-     ]
+     [ 0.0 ],
+     [ 0.0001 ],
+     [ 0.0 ]
     ],
     "risk_factors": [
      "TEST"
