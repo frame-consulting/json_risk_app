@@ -145,7 +145,11 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
 	$scope.copy_rule_values=function(rule){
 		let text="\t"+rule.labels_x.join("\t")+"\n";
 		for (let i=0;i<rule.labels_y.length;i++){
-			text+=rule.labels_y[i]+"\t"+rule.values[i].join("\t")+"\n";
+		    text+=rule.labels_y[i]
+		    for(let j=0;j<rule.labels_x.length;j++){
+			    text+="\t"+rule.values[j][i]
+			}
+			text+="\n";
 		}
 		text.length--;
 		navigator.clipboard.writeText(text).then(function() {}, function() {
@@ -155,7 +159,7 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
 
 	$scope.paste_rule_values=function(rule){
 		navigator.clipboard.readText().then(function(text){
-			let data=text.replace(/\r/g,'').toLowerCase().split("\n");
+			let data=text.replaceAll('\r','').toLowerCase().split("\n");
 			if (''===data[data.length-1]) data.pop();
 			let x=data[0].split("\t");
 			x.shift();
@@ -176,35 +180,41 @@ app.controller('main_ctrl', ['$scope', function($scope) { // Controller für ind
 				}
 				v.push(line);
 			}
-			// validate labels x
-			for (let i=0;i<x.length;i++){
+			// transpose values matrix so it complies to jsonrisk standard, i.e., matrix contains x.length elements, each is an array of length y.length
+			v=v[0].map((_, col_idx) => v.map(row => row[col_idx]));
+			
+			// validate labels
+			const validate_label=function(label){
+			    if (isFinite(Number(label))) return true;			
 				try{
-					JsonRisk.period_str_to_time(x[i]);
+					JsonRisk.period_str_to_time(label);
 				}catch{
-					alert("Could not parse pasted data, invalid label " + x[i] + ". Valid labels end with Y,y,M,m,W,w,D, or d.");
-					return 0;
-				}			
+					alert("Could not parse pasted data, invalid label " + label + ". Valid labels end with Y,y,M,m,W,w,D, or d. Numeric strings are also supported.");
+					return false;
+				}		
+				return true;
 			}
-			//validate labels y
-			for (let j=0;j<y.length;j++){
-				try{
-					JsonRisk.period_str_to_time(y[j]);
-				}catch{
-					alert("Could not parse pasted data, invalid label " + y[j] + ". Valid labels end with Y,y,M,m,W,w,D, or d.");
-					return 0;
-				}			
+			
+			// validate labels x
+			for (const label of x){
+			    if( !validate_label(label)) return 0;
+	
+			}
+			// validate labels y
+			for (const label of y){
+			    if( !validate_label(label)) return 0;
 			}
 
 			//validate values and convert to numbers
 			let tmp;
 			for (let i=0;i<x.length;i++){
 				for (let j=0;j<y.length;j++){
-					tmp=parseFloat(v[j][i].replace(',','.'));
+					tmp=parseFloat(v[i][j].replace(',','.'));
 					if (isNaN(tmp)){
-						alert("Could not parse pasted data, invalid number " + v[j][i]);
+						alert("Could not parse pasted data, invalid number " + v[i][j]);
 						return 0;
 					}
-					v[j][i]=tmp;
+					v[i][j]=tmp;
 				}		
 			}
 			rule.labels_x=x;
