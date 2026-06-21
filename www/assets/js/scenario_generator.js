@@ -114,7 +114,7 @@ Brief support library for generating scenarios from historic CSV data
                     model: this.model,
                     labels_x: labels,
                     labels_y: ["1Y"], // support only one dimensional scenarios for now
-                    values: [values]
+                    values: values.map((v)=>[v]) // scenario values are 2d arrays
                 }]        
             }
             i_data--;
