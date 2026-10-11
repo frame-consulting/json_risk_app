@@ -40,21 +40,26 @@
                 						<span data-feather="edit"></span>Edit fields
                 					</a> 
               					</li>
-              					<li class="nav-item" ng-class="{active: display.tab==='params'}">
+              					<li class="nav-item" >
                  					<a class="nav-link" href="#" ng-click="edit('per-scenario fields',fields)">
                  						<span data-feather="edit"></span>Edit per-scenario fields
                 					</a>
               					</li>
-              					<li class="nav-item" ng-class="{active: display.tab==='params'}">
+              					<li class="nav-item" >
                  					<a class="nav-link" href="#" ng-click="edit('scenarios',meta.scenarios)">
                  						<span data-feather="edit"></span>Edit scenarios
                 					</a>
               					</li>
-              					<li class="nav-item" ng-class="{active: display.tab==='params'}">
+              					<li class="nav-item" >
                  					<a class="nav-link" href="#" ng-click="edit('grouping',fields)">
                  						<span data-feather="edit"></span>Edit grouping
                 					</a>
               					</li>
+								<li class="nav-item" ng-if="null===local_results">
+									<a class="nav-link" href="#" ng-click="edit_filter()">
+										<span data-feather="edit"></span>Edit filter
+									</a>
+								</li>
             				</ul>           
             				<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
               					<span>Documentation</span>
@@ -160,6 +165,28 @@
 						</div>
 					  </div>
 					</div>
+
+				<!--
+
+					Filter editor modal
+
+				-->
+				<div class="modal jrmodal" ng-if="filter_editor.enabled" tabindex="-1">
+				  <div class="modal-dialog modal-lg">
+					<div class="modal-content">
+					  <div class="modal-header">
+						<h5 class="modal-title">Edit filter</h5>
+					  </div>
+					  <div class="modal-body">
+						<textarea ng-model="filter_editor.json" class="form-control input-sm input-outline-secondary" rows="12"></textarea>
+					  </div>
+					  <div class="modal-footer">
+						<button ng-click="cancel_edit_filter()" class="btn btn-secondary">Cancel</button>
+						<button ng-click="confirm_edit_filter()" class="btn btn-primary">Confirm</button>
+					  </div>
+					</div>
+				  </div>
+				</div>
 
 
 					<!--

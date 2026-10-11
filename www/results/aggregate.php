@@ -95,13 +95,42 @@ function jr_get_grouper($spec){
 	$res=null;
 	if (null!==$spec) $res=jr_get_prop($spec,'grouping');
 	if (null===$res) return array('sub_portfolio');
+	if (!is_array($res)) return array('sub_portfolio');
+	foreach($res as $field){
+		if (!is_string($field)) return array('sub_portfolio');
+	}
 	return $res;
 }
 
-function jr_append(&$items,&$collection,&$index,$grouper){
+function jr_get_filter($spec){
+	$res=null;
+	if (null!==$spec) $res=jr_get_prop($spec,'filter');
+	if (null===$res) return null;
+	if (!is_object($res)) return null;
+	foreach($res as $value){
+		if (!is_string($value)) return null;
+	}
+	return $res;
+}
+
+function jr_matches_filter($item,$filter){
+	if (null===$filter) return true;
+	foreach($filter as $key => $pattern){
+		$item_value=jr_get_prop($item,$key);
+		if (!is_string($item_value)) return false;
+		if (!preg_match('~' . $pattern . '~', $item_value)) return false;
+	}
+	return true;
+}
+
+function jr_append(&$items,&$collection,&$index,$grouper,$filter){
 	// add all items  item to aggregated $collection of results, using $index for quick discovery of items to aggregate
 	$item=array_pop($items);
 	while (null!==$item){
+		if (!jr_matches_filter($item,$filter)) {
+			$item=array_pop($items);
+			continue;
+		}
 		$grouping=jr_get_grouping($item,$grouper);
 		$item->_grouping=$grouping;
 		
@@ -123,10 +152,11 @@ function jr_aggregate($path,$spec,$start,$incr){ // aggregate results from direc
 	$index=array();
 	$items=null;
 	$grouper=jr_get_grouper($spec);
+	$filter=jr_get_filter($spec);
 	for ($i=$start;;$i+=$incr){
 		$items=jr_read_json($path,$i);
 		if (null===$items) break;
-		jr_append($items,$res,$index,$grouper);
+		jr_append($items,$res,$index,$grouper,$filter);
 	}
 	return $res;
 }

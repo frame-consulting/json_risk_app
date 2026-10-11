@@ -21,7 +21,8 @@ app.controller('main_ctrl', ['$scope', '$http', function($scope, $http) { // Con
 		fields: [],
 		grouping: ['sub_portfolio'],
 		"per-scenario fields": [],
-		scenarios: ['Base']
+		scenarios: ['Base'],
+		filter: null
 	};
 
 	$scope.picker={
@@ -29,7 +30,11 @@ app.controller('main_ctrl', ['$scope', '$http', function($scope, $http) { // Con
 		filter: "",
 		left: "",
 		right: ""
-	}
+	};
+	$scope.filter_editor={
+		enabled: false,
+		json: ""
+	};
 
 	$scope.export_settings={
 		separator: '\t'
@@ -180,7 +185,27 @@ app.controller('main_ctrl', ['$scope', '$http', function($scope, $http) { // Con
 
 	$scope.cancel_edit=function(){
 		$scope.picker.enabled=false;
-	}
+	};
+
+	$scope.edit_filter=function(){
+		$scope.filter_editor.json=JSON.stringify($scope.spec.filter || {}, null, 2);
+		$scope.filter_editor.enabled=true;
+	};
+
+	$scope.cancel_edit_filter=function(){
+		$scope.filter_editor.enabled=false;
+	};
+
+	$scope.confirm_edit_filter=function(){
+		try {
+			$scope.spec.filter=JSON.parse($scope.filter_editor.json);
+		} catch (e) {
+			alert("Invalid JSON: " + e.message);
+			return;
+		}
+		$scope.filter_editor.enabled=false;
+		$scope.load_results();
+	};
 
 	$scope.confirm_edit=function(){
 		target=$scope.picker.target;
