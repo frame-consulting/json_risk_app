@@ -1,338 +1,388 @@
 [
- {
-  "name": "Bump 1W",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "1w",
-     "3m"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0.0001,
-      0
-     ]
+  {
+    "name": "Bump 1W",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "1w",
+          "3m"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 3M",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "1w",
-     "3m",
-     "6m"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 3M",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "1w",
+          "3m",
+          "6m"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 6M",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "3m",
-     "6m",
-     "1y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 6M",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "3m",
+          "6m",
+          "1y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 1Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "6m",
-     "1y",
-     "2y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 1Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "6m",
+          "1y",
+          "2y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 2Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "1y",
-     "2y",
-     "3y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 2Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "1y",
+          "2y",
+          "3y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 3Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "2y",
-     "3y",
-     "5y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 3Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "2y",
+          "3y",
+          "5y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 5Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "3y",
-     "5y",
-     "7y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 5Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "3y",
+          "5y",
+          "7y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 7Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "5y",
-     "7y",
-     "10y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 7Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "5y",
+          "7y",
+          "10y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 10Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "7y",
-     "10y",
-     "15y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 10Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "7y",
+          "10y",
+          "15y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 15Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "10y",
-     "15y",
-     "20y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 15Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "10y",
+          "15y",
+          "20y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 20Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "15y",
-     "20y",
-     "25y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 20Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "15y",
+          "20y",
+          "25y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 25Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "20y",
-     "25y",
-     "30y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 25Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "20y",
+          "25y",
+          "30y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- },
- {
-  "name": "Bump 30Y",
-  "rules": [
-   {
-    "model": "additive",
-    "tags": [
-     "yield"
-    ],
-    "labels_x": [
-     "25y",
-     "30y",
-     "35y"
-    ],
-    "labels_y": [
-     "1y"
-    ],
-    "values": [
-     [
-      0,
-      0.0001,
-      0
-     ]
+  },
+  {
+    "name": "Bump 30Y",
+    "rules": [
+      {
+        "model": "additive",
+        "values": [
+          [
+            0
+          ],
+          [
+            0.0001
+          ],
+          [
+            0
+          ]
+        ],
+        "tags": [
+          "yield"
+        ],
+        "labels_x": [
+          "25y",
+          "30y",
+          "35y"
+        ],
+        "labels_y": [
+          "1y"
+        ]
+      }
     ]
-   }
-  ]
- }
+  }
 ]
