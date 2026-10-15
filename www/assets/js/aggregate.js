@@ -59,8 +59,8 @@ class jr_aggregator {
 				this.#add_arrays(target[key],value);
 				continue;
 			}
-			if ('object' === typeof(value)){
-				// objects: merge and add entries
+			if (value && 'object' === typeof(value)){
+				// non-null objects: merge and add entries
 				if ('object' !== typeof(target_value)) target[key]={};
 				this.#add_objects(target[key],value);
 				continue;
