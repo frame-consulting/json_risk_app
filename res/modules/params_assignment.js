@@ -103,8 +103,7 @@ assign_params=function(i,p){
                 case "floater":
                 case "swap":
 			assign_fwd_curve(i,p);
-				case "bond":
-                case "fxterm":
+				default:
 			assign_disc_curve(i,p);
 	}
 }
