@@ -236,6 +236,8 @@
         return new library.Bond(obj);
       case "floater":
         return new library.Floater(obj);
+      case "capfloor":
+        return new library.CapFloor(obj);
       case "swap":
         return new library.Swap(obj);
       case "swaption":
@@ -361,8 +363,12 @@
         return new library.FixedRatePayment(obj);
       case "float":
         return new library.FloatRatePayment(obj);
+      case "caplet":
+        return new library.CapletPayment(obj);
+      case "floorlet":
+        return new library.FloorletPayment(obj);
       default:
-        throw new Error("make_payment: invalid payment type");
+        throw new Error(`make_payment: invalid payment type ${obj.type}`);
     }
   };
 })(this.JsonRisk || module.exports);
@@ -618,8 +624,10 @@
         throw new Error("Bond: must have exactly one leg");
 
       const leg = this.legs[0];
-      if (leg.has_float_rate_payments)
-        throw new Error("Bond: cannot have float rate payments");
+      if (leg.has_float_rate_payments || leg.has_embedded_options)
+        throw new Error(
+          "Bond: cannot have float rate payments, caplets or floorlets",
+        );
       if (false === leg.has_notional_payments)
         throw new Error("Bond: must have notional payments");
     }
@@ -819,6 +827,12 @@
 
     value_impl(params) {
       const leg = this.legs[0];
+
+      library.nonempty_string_or_throw(
+        leg.disc_curve,
+        "CallableBond: no discount curve specified, make sure to populate 'disc_curve' on leg level or, when legs are generated from terms, on instrument level",
+      );
+
       const disc_curve = params.get_curve(leg.disc_curve);
       const spread_curve =
         leg.spread_curve != "" ? params.get_curve(leg.spread_curve) : null;
@@ -888,6 +902,113 @@
   }
 
   library.CallableBond = CallableBond;
+})(this.JsonRisk || module.exports);
+(function (library) {
+  /**
+   * Class representing an interest rate cap or floor
+   * @memberof JsonRisk
+   * @extends LegInstrument
+   */
+  class CapFloor extends library.LegInstrument {
+    /**
+     * Create a cap/floor instrument. If legs are not provided, legs are generated from terms and conditions. Legs must contain one and only one leg with floating and notional payments.
+     * @param {obj} obj A plain object representing the instrument
+     * @param {string} [obj.currency=""] the currency in which this instrument's value is represented
+     * @param {number} [obj.quantity=1.0] the quantity with which the instrument's value is multiplied
+     * @param {array} [obj.legs=[]] the legs of this instrument.
+     * @param {date} [obj.acquire_date=01.01.1900] the acquire date
+     *
+     * // MANDATORY & OPTIONAL FIELDS FOR GENERATING THE CAP/FLOOR CASH FLOWS:
+     * @param {date|string} obj.effective_date - The start date of the instrument.
+     * @param {date|string} obj.maturity - The maturity / end date of the instrument.
+     * @param {number} obj.notional - The nominal amount for interest calculation.
+     * @param {number} obj.tenor - The payment frequency in months (e.g., 6 for semi-annual).
+     * @param {number} obj.float_current_rate - The fixing rate for the current open interest period.
+     * @param {number} [obj.float_spread=0.0] - The constant margin/spread added to the floating rate.
+     * @param {number} obj.cap_rate - The cap strike rate
+     * @param {number} obj.floor_rate - The floor strike rate
+     * @param {string} obj.disc_curve - The name of the discounting interest rate curve.
+     * @param {string} obj.fwd_curve - The name of the forward interest rate curve for projections.
+     * @param {string} obj.surface - The name of the ExpiryStrike volatility surface.
+     * @param {string} [obj.dcc="act/365"] - Day count convention (e.g., "act/360", "30/360").
+     * @param {string} [obj.calendar="TARGET"] - The holiday calendar used for business day adjustments.
+     * @param {string} [obj.bdc="f"] - Business day convention (e.g., "f" for following, "m" for modified following).
+     */
+
+    constructor(obj) {
+      if (!Array.isArray(obj.legs)) {
+        // create shallow copy and leave original object unchanged
+        const tempobj = Object.assign({}, obj);
+
+        // remove fixed_rate so cash flow generator generates floating leg
+        delete tempobj.fixed_rate;
+
+        // generate leg from terms and conditions
+        const leg = library.cashflow_generator(tempobj);
+
+        // remove all payments except caplets and floorlets
+        leg.payments = leg.payments.filter(
+          (p) => p.type === "caplet" || p.type === "floorlet",
+        );
+
+        // make simple index
+        const index = {
+          fwd_curve: obj.fwd_curve,
+          surface: obj.surface,
+          dcc: obj.dcc,
+        };
+
+        // attach index to leg json
+        leg.indices = { index: index };
+
+        // attach leg to instrument json
+        tempobj.legs = [leg];
+
+        super(tempobj);
+
+        // update notionals
+        this.legs[0].update_notionals();
+      } else {
+        super(obj);
+      }
+
+      // sanity checks
+      if (1 !== this.legs.length)
+        throw new Error("Floater: must have exactly one leg");
+
+      const leg = this.legs[0];
+      if (
+        leg.has_fixed_rate_payments ||
+        leg.has_float_rate_payments ||
+        leg.has_notional_payments
+      )
+        throw new Error("CapFloor: can only have caplet and floorlet payments");
+
+      if (leg.has_capitalization)
+        throw new Error("CapFloor: cannot have capitalization");
+    }
+
+    /**
+     * Calculate the fair spread rate, i.e., the spread rate this bond would have to carry on top of the float rate in order to have a par valuation
+     * @param {Params} params a valid parameters container object
+     * @returns {number}
+     */
+    fair_rate_or_spread(params) {
+      return this.legs[0].fair_rate_or_spread(params);
+    }
+
+    /**
+     * Calculate the spread rate annuity, e.g. the value of one hundred percent spread on top of the float rate
+     * @param {Params} params a valid parameters container object
+     * @returns {number}
+     */
+    annuity(params) {
+      // returns spread rate annuity
+      return this.legs[0].annuity(params);
+    }
+  }
+
+  library.CapFloor = CapFloor;
 })(this.JsonRisk || module.exports);
 (function (library) {
   /**
@@ -983,7 +1104,16 @@
     }
 
     value_impl(params, extras_not_used) {
+      library.nonempty_string_or_throw(
+        this.legs[0].disc_curve,
+        "CDS: no discount curve specified, make sure to populate 'disc_curve' on leg level or , when legs are generated from terms, on instrument level",
+      );
       const dc = params.get_curve(this.legs[0].disc_curve);
+
+      library.nonempty_string_or_throw(
+        this.#survival_curve,
+        "CDS: no survival curve specified, make sure to populate 'survival_curve' on instrument level",
+      );
       const sc = params.get_curve(this.#survival_curve);
       const isda = new library.IsdaCdsModel(dc, sc);
 
@@ -1111,6 +1241,10 @@
     }
 
     value_impl(params, extras_not_used) {
+      library.nonempty_string_or_throw(
+        this.quote,
+        "Equity: no spot quote specified, make sure to populate 'quote' on instrument level",
+      );
       const quote = params.get_scalar(this.#quote);
       if ("" == this.#disc_curve) return quote.get_value();
       const spot_date = this.spot_date();
@@ -1200,8 +1334,19 @@
 
     value_impl(params, extras_not_used) {
       if (library.valuation_date >= this.#expiry) return 0.0;
+
+      library.nonempty_string_or_throw(
+        this.quote,
+        "EquityAmericanOption: no spot quote specified, make sure to populate 'quote' on instrument level",
+      );
+
       const quote = params.get_scalar(this.quote);
       const spot = quote.get_value();
+
+      library.nonempty_string_or_throw(
+        this.disc_curve,
+        "EquityAmericanOption: no discount curve specified, make sure to populate 'disc_curve' on instrument level",
+      );
       const dc = params.get_curve(this.disc_curve);
       const rc = this.#repo_curve ? params.get_curve(this.#repo_curve) : dc;
       const surface = params.get_surface(this.#surface);
@@ -1313,8 +1458,19 @@
 
     value_impl(params, extras_not_used) {
       if (library.valuation_date >= this.#expiry) return 0.0;
+
+      library.nonempty_string_or_throw(
+        this.quote,
+        "EquityForward: no spot quote specified, make sure to populate 'quote' on instrument level",
+      );
       const quote = params.get_scalar(this.quote);
+
+      library.nonempty_string_or_throw(
+        this.disc_curve,
+        "EquityForward: no discount curve specified, make sure to populate 'disc_curve' on instrument level",
+      );
       const dc = params.get_curve(this.disc_curve);
+
       const rc = this.#repo_curve ? params.get_curve(this.#repo_curve) : dc;
 
       const forward = this.forward(quote.get_value(), this.#expiry, dc, rc);
@@ -1375,7 +1531,17 @@
 
     value_impl(params, extras_not_used) {
       if (library.valuation_date >= this.#expiry) return 0.0;
+
+      library.nonempty_string_or_throw(
+        this.quote,
+        "EquityFuture: no spot quote specified, make sure to populate 'quote' on instrument level",
+      );
       const quote = params.get_scalar(this.quote);
+
+      library.nonempty_string_or_throw(
+        this.disc_curve,
+        "EquityFuture: no discount curve specified, make sure to populate 'disc_curve' on instrument level",
+      );
       const dc = params.get_curve(this.disc_curve);
       const rc = this.#repo_curve ? params.get_curve(this.#repo_curve) : dc;
 
@@ -1442,7 +1608,16 @@
 
     value_impl(params, extras_not_used) {
       if (library.valuation_date >= this.#expiry) return 0.0;
+      library.nonempty_string_or_throw(
+        this.quote,
+        "EquityOption: no spot quote specified, make sure to populate 'quote' on instrument level",
+      );
       const quote = params.get_scalar(this.quote);
+
+      library.nonempty_string_or_throw(
+        this.disc_curve,
+        "EquityOption: no discount curve specified, make sure to populate 'disc_curve' on instrument level",
+      );
       const dc = params.get_curve(this.disc_curve);
       const rc = this.#repo_curve ? params.get_curve(this.#repo_curve) : dc;
       const surface = params.get_surface(this.#surface);
@@ -1700,6 +1875,8 @@
       for (const leg of this.legs) {
         if (leg.has_capitalization)
           throw new Error("Swap: Cannot have capitalizing rate payments");
+        if (leg.has_embedded_options)
+          throw new Error("Swap: Cannot have caplets or floorlets");
         const is_fix = leg.has_fixed_rate_payments;
         const is_float = leg.has_float_rate_payments;
         if (is_fix === true && is_float === false) this.#fixed_leg = leg;
@@ -1869,7 +2046,16 @@
     }
 
     value_impl(params) {
+      library.nonempty_string_or_throw(
+        this.fixed_leg.disc_curve,
+        "Swaption: no discount curve specified, make sure to populate 'disc_curve' on leg level or , when legs are generated from terms, on instrument level",
+      );
       const disc_curve = params.get_curve(this.fixed_leg.disc_curve);
+
+      library.nonempty_string_or_throw(
+        this.#surface,
+        "Swaption: no surface specified, make sure to populate 'surface' on instrument level",
+      );
       const surface = params.get_surface(this.#surface);
 
       // fwd curve from first index that can be found
@@ -2328,7 +2514,7 @@
     const dcc = specs.dcc;
     const date_roll = specs.roll_date;
     const tenor = specs.tenor;
-    const res = {
+    const pmt = {
       notional,
       date_start,
       date_end,
@@ -2338,37 +2524,45 @@
       date_value,
       dcc,
     };
-    if (current_conditions.interest_capitalization) res.capitalize = true;
+    if (current_conditions.interest_capitalization) pmt.capitalize = true;
     if (!specs.is_float) {
       // fixed payment
-      res.type = "fixed";
-      res.rate = current_conditions.fixed_rate;
-      return res;
+      pmt.type = "fixed";
+      pmt.rate = current_conditions.fixed_rate;
+      return [pmt];
     }
     // float payment
+    pmt.type = "float";
     const { float_spread, cap_rate, floor_rate } = current_conditions;
-    res.reset_start = reset_start;
-    res.reset_end = reset_end;
-    res.spread = float_spread;
-    res.index = "index";
+    pmt.reset_start = reset_start;
+    pmt.reset_end = reset_end;
+    pmt.spread = float_spread;
+    pmt.index = "index";
 
     // fixing
     if (reset_start <= library.valuation_date) {
-      res.is_fixed = true;
-      res.rate = specs.float_current_rate + float_spread;
+      pmt.is_fixed = true;
+      pmt.rate = specs.float_current_rate + float_spread;
     } else {
-      res.is_fixed = false;
+      pmt.is_fixed = false;
     }
 
+    const res = [pmt];
     // cap and floor
-    if (cap_rate === Infinity && floor_rate === -Infinity) {
-      res.type = "float";
-    } else {
-      res.type = "float_cap_floor";
-      res.cap_rate = cap_rate;
-      res.floor_rate = floor_rate;
+    if (cap_rate < Infinity) {
+      // copy payment object and add caplet properties
+      const caplet = Object.assign({}, pmt);
+      caplet.type = "caplet";
+      caplet.strike = cap_rate;
+      res.push(caplet);
     }
-
+    if (floor_rate > -Infinity) {
+      // copy payment object and add floorlet properties
+      const floorlet = Object.assign({}, pmt);
+      floorlet.type = "floorlet";
+      floorlet.strike = floor_rate;
+      res.push(floorlet);
+    }
     return res;
   }
 
@@ -2414,9 +2608,9 @@
       const date_next_fixing = fixing_schedule[0];
       const current_conditions = conditions[0];
 
-      // make interest rate payment
+      // make interest rate payment and add optional cap, floor
       cashflows.push(
-        pay_interest(
+        ...pay_interest(
           notional,
           date_start,
           date_end,
@@ -2628,7 +2822,7 @@
      */
     get has_float_rate_payments() {
       for (const p of this.#payments) {
-        if (p instanceof library.FloatRatePayment) return true;
+        if (p.constructor === library.FloatRatePayment) return true;
       }
       return false;
     }
@@ -2638,7 +2832,9 @@
      * @type {boolean}
      */
     get has_embedded_options() {
-      // not supported yet
+      for (const p of this.#payments) {
+        if (p instanceof library.CapFloorPayment) return true;
+      }
       return false;
     }
 
@@ -2731,6 +2927,10 @@
     }
 
     #discounter(params) {
+      library.nonempty_string_or_throw(
+        this.#disc_curve,
+        "LegInstrument: no discount curve specified, make sure to populate 'disc_curve' on leg level or, when legs are generated from terms, on instrument level",
+      );
       const disc_curve = params.get_curve(this.#disc_curve);
       const spread_curve =
         this.#spread_curve !== "" ? params.get_curve(this.#spread_curve) : null;
@@ -2762,6 +2962,7 @@
     value(params, acquire_date) {
       for (const idx of Object.values(this.#indices)) {
         idx.link_curve(params);
+        idx.link_surface(params);
       }
       for (const p of this.#payments) {
         // make projection for unfixed payments
@@ -3231,7 +3432,7 @@
      * @param {string} [obj.currency=""] currency of the payment.
      * @param {number} obj.rate fixed rate of the payment.
      * @param {string} [obj.dcc=""] day count convention of the payment.
-     * @param {boolean} [obj.calitalize=false] falg indicating if this payment capitalizes
+     * @param {boolean} [obj.capitalize=false] falg indicating if this payment capitalizes
      */
     constructor(obj) {
       super(obj);
@@ -3301,7 +3502,7 @@
      * @param {string} [obj.index=""] named reference to an index of the payment.
      * @param {number} [obj.spread=0.0] fixed spread rate of the payment.
      * @param {string} [obj.dcc=""] day count convention of the payment.
-     * @param {boolean} [obj.calitalize=false] falg indicating if this payment capitalizes
+     * @param {boolean} [obj.capitalize=false] flag indicating if this payment capitalizes
      */
     constructor(obj) {
       super(obj);
@@ -3351,10 +3552,17 @@
       return this.capitalize ? 0.0 : this.amount_interest;
     }
     get amount_interest() {
-      return this.#rate * this.notional * this.yf;
+      // allows rate override by CapFloorPayment class
+      return this.rate * this.notional * this.yf;
     }
     get amount_notional() {
       return this.capitalize ? -this.amount_interest : 0.0;
+    }
+    get reset_start() {
+      return this.#reset_start;
+    }
+    get reset_end() {
+      return this.#reset_end;
     }
 
     // serialise
@@ -3364,7 +3572,7 @@
       res.is_fixed = this.#is_fixed;
       res.index = this.#index;
       res.spread = this.#spread;
-      res.rate = this.#rate;
+      res.rate = this.rate; // allow override by CapFloorPayment class
       res.reset_start = library.date_to_date_str(this.#reset_start);
       res.reset_end = library.date_to_date_str(this.#reset_end);
       return res;
@@ -3388,12 +3596,106 @@
     }
   }
 
-  // FloatRatePaymentCapFloor(index_name, is_fixed, spread, rate_cap, rate_floor)
+  class CapFloorPayment extends FloatRatePayment {
+    #strike = 0.0;
+    #rate = 0.0;
+    #volatility = 0.0;
 
-  // CapFloorPayment()
+    constructor(obj) {
+      super(obj);
+      this.#strike = library.number_or_null(obj.strike);
+    }
+
+    // getter functions
+    get rate() {
+      return this.#rate;
+    }
+    get strike() {
+      return this.#strike;
+    }
+    get volatility() {
+      return this.#volatility;
+    }
+
+    toJSON() {
+      const res = super.toJSON();
+      res.strike = this.#strike;
+      res.volatility = this.#volatility;
+      return res;
+    }
+
+    // project rate
+    project(indices) {
+      if (this.is_fixed) return this.rate;
+      if ("" === this.index)
+        throw new Error(`${this.constructor.name}: no index defined`);
+      const idx = indices[this.index];
+      if (undefined === idx)
+        throw new Error(
+          `${this.constructor.name}: index ${this.index} was not supplied`,
+        );
+      if (!(idx instanceof library.SimpleIndex))
+        throw new Error(
+          `${this.constructor.name}: invalid index ${this.index}`,
+        );
+      const raw_fwd_rate = idx.fwd_rate(this.reset_start, this.reset_end);
+      this.#volatility = idx.volatility(
+        this.reset_start,
+        this.reset_end,
+        raw_fwd_rate,
+        this.strike,
+      ); // we do not consider spread in the computation of volatility
+
+      const t_expiry = library.time_from_now(this.reset_start);
+      const bachelier = new library.BachelierModel(t_expiry, this.#volatility);
+      const fwd_rate = raw_fwd_rate + this.spread;
+
+      switch (this.constructor.name) {
+        case "CapletPayment":
+          this.#rate = -bachelier.call_price(fwd_rate, this.strike);
+          break;
+        case "FloorletPayment":
+          this.#rate = bachelier.put_price(fwd_rate, this.strike);
+          break;
+        default:
+          throw new Error(
+            `${this.constructor.name}: Method 'project()' requires payment class name being either "CapletPayment" or "FloorletPayment".`,
+          );
+      }
+      return this.#rate;
+    }
+  }
+
+  class CapletPayment extends CapFloorPayment {
+    constructor(obj) {
+      super(obj);
+    }
+
+    toJSON() {
+      const res = super.toJSON();
+      res.type = "Caplet";
+      return res;
+    }
+  }
+
+  class FloorletPayment extends CapFloorPayment {
+    constructor(obj) {
+      super(obj);
+    }
+
+    toJSON() {
+      const res = super.toJSON();
+      res.type = "Floorlet";
+      return res;
+    }
+  }
+
   library.NotionalPayment = NotionalPayment;
   library.FixedRatePayment = FixedRatePayment;
   library.FloatRatePayment = FloatRatePayment;
+  library.CapFloorPayment = CapFloorPayment;
+  library.CapletPayment = CapletPayment;
+  library.FloorletPayment = FloorletPayment;
 
   library.payment_compare = function (a, b) {
     // sort by start date first while notional payments use date_value instead
@@ -3413,6 +3715,8 @@
     // sort the remaining payments by their type
     const na = a.constructor.name;
     const nb = b.constructor.name;
+    if (na === "FloatRatePayment") return -1;
+    if (nb === "FloatRatePayment") return 1;
     return na < nb ? 1 : na > nb ? -1 : 0;
   };
 })(this.JsonRisk || module.exports);
@@ -3423,6 +3727,7 @@
     #dcc = "";
     #yffunc = null;
     #linked_curve = null;
+    #linked_surface = null;
     constructor(obj) {
       // fwd_curve
       this.#fwd_curve = library.string_or_empty(obj.fwd_curve);
@@ -3484,6 +3789,47 @@
 
       // amount converted to a rate with the index day count method
       return amount / yf;
+    }
+
+    link_surface(params_or_surface) {
+      if (params_or_surface && params_or_surface.get_surface_rate) {
+        this.#linked_surface = params_or_surface;
+        return;
+      }
+
+      if (params_or_surface instanceof library.Params) {
+        if (this.#surface)
+          this.#linked_surface = params_or_surface.get_surface(this.#surface);
+        return;
+      }
+
+      throw new Error(
+        `${this.constructor.name}: Try to link volatility surface with an invalid argument.`,
+      );
+    }
+
+    // volatility
+    /**
+     * @param {Date} start
+     * @param {Date} end
+     * @param {number} fwd
+     * @param {number} strike
+     * @returns {number} the volatility value
+     */
+    volatility(start, end, fwd, strike) {
+      const t_expiry = library.time_from_now(start);
+      const t_term = library.time_from_now(end) - t_expiry;
+
+      if (
+        !this.#linked_surface ||
+        typeof this.#linked_surface.get_rate !== "function"
+      ) {
+        throw new Error(
+          `${this.constructor.name}: No valid volatility surface linked, call link_surface first.`,
+        );
+      }
+
+      return this.#linked_surface.get_rate(t_expiry, t_term, fwd, strike);
     }
 
     // deps
@@ -6942,7 +7288,7 @@
     has_curve(name) {
       const n = library.nonempty_string_or_throw(
         name,
-        "get_scalar: name must be nonempty string",
+        "has_curve: name must be nonempty string",
       );
       return n in this.#curves;
     }
@@ -6955,7 +7301,7 @@
     has_surface(name) {
       const n = library.nonempty_string_or_throw(
         name,
-        "get_scalar: name must be nonempty string",
+        "has_surface: name must be nonempty string",
       );
       return n in this.#surfaces;
     }
@@ -6996,7 +7342,7 @@
     get_surface(name) {
       const n = library.nonempty_string_or_throw(
         name,
-        "get_curve: name must be nonempty string",
+        "get_surface: name must be nonempty string",
       );
       if (!(n in this.#surfaces))
         throw new Error(`Params: no such surface ${n}`);
@@ -7788,46 +8134,15 @@
     if (!(name instanceof String || typeof name === "string"))
       throw new Error("add_calendar: invalid input.");
     if (!Array.isArray(dates)) throw new Error("add_calendar: invalid input.");
-    let n = dates.length,
-      i,
-      ht_size;
-    const holidays = [];
+    const holidays = new Set();
     //only consider array items that are valid dates or date strings and that are no default holidays, i.e., weekend days
-    for (i = 0; i < n; i++) {
-      const dt = library.date_or_null(dates[i]);
+    for (let dt of dates) {
+      dt = library.date_or_null(dt);
       if (!dt) continue;
       if (is_holiday_default(dt)) continue;
-      holidays.push(dt);
+      holidays.add(dt.getTime());
     }
-    n = holidays.length;
-    /*
-                Determine hash table size, must be prime number greater than number of holidays.
-                According to one of euclid's formulae, i*i - i + 41 is prime when i<41.
-                Max size is 1601 which is way enough for all reasonable calendars.
-                
-        */
-    i = 1;
-    while (i < 41) {
-      ht_size = i * i - i + 41;
-      if (ht_size >= n / 10) break;
-      i++;
-    }
-
-    //populate hash table
-    const hash_table = new Array(ht_size);
-    for (i = 0; i < ht_size; i++) {
-      hash_table[i] = [];
-    }
-
-    for (i = 0; i < n; i++) {
-      const ht_index =
-        Math.floor(holidays[i].getTime() * one_over_dl) % ht_size;
-      hash_table[ht_index].push(holidays[i].getTime());
-    }
-
-    //tie new hash table to calendars list and return size for informational purposes
-    calendars[name.toLowerCase()] = hash_table;
-    return ht_size;
+    calendars[name.toLowerCase()] = holidays;
   };
 
   /**
@@ -7839,23 +8154,24 @@
    */
   library.is_holiday_factory = function (str) {
     const sl = str.toLowerCase();
+
     //builtin target calendar
     if (sl === "target") return is_holiday_target;
-    //generic hash lookup function for stored calendars
-    if (Array.isArray(calendars[sl])) {
-      const cal = calendars[sl];
+
+    //fallback
+    if (sl === "") return is_holiday_default;
+
+    //generic lookup for stored calendars
+    const cal = calendars[sl];
+    if (cal instanceof Set) {
       return function (dt) {
         if (is_holiday_default(dt)) return true;
-        const ms = dt.getTime();
-        const ht_index = Math.floor(ms * one_over_dl) % cal.length;
-        for (let i = 0; i < cal[ht_index].length; i++) {
-          if (ms === cal[ht_index][i]) return true;
-        }
+        if (cal.has(dt.getTime())) return true;
         return false;
       };
     }
-    //fallback
-    if (sl === "") return is_holiday_default;
+
+    // fail otherwise
     throw new Error("is_holiday_factory: calendar not found: " + sl);
   };
 
