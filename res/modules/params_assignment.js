@@ -80,32 +80,28 @@ assign_fwd_curve=function(i,p){
     return 1;
 }
 
-assign_surface=function(i,p){
+assign_surface=function(i,p,name){
 
 	//a surface has already been assigned
 	if(i.surface) return 0;
 
 	//need assignment
-	cname="CONST_10BP"; //default surface name
-	if(cname in p.surfaces){
+	if(name in p.surfaces){
 		//assign
-		i.surface=cname;
+		i.surface=name;
         return 0;
 	}
     return 1;
 }
 
+
 assign_params=function(i,p){
-	switch(i.type.toLowerCase()){
-                case "callable_bond":
-                case "swaption":
-			assign_surface(i,p);
-                case "floater":
-                case "swap":
-			assign_fwd_curve(i,p);
-				default:
-			assign_disc_curve(i,p);
-	}
+	assign_disc_curve(i,p);
+	const t=i.type.toLowerCase().replaceAll('_', '');
+	
+	if(["callablebond", "swaption"].includes(t)) assign_surface(i,p, "SWAPTION");
+	if(["floater", "capfloor"].includes(t)) assign_surface(i,p,"CAPLET");
+	if(["floater", "swap", "callablebond"].includes(t)) assign_fwd_curve(i,p);
 }
 
 exports.instrument_mapping=function(){
